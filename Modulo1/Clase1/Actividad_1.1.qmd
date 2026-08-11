@@ -1,0 +1,30 @@
+---
+title: "Actividad"
+format: html
+---
+
+## Actividad 1.1 Normalidad univariada
+
+En la normalidad
+
+1.  Dibuja el gráfico de la distribución normal con media cero y desviación estándar 100
+
+    ```{r}
+    Pob_normal = dnorm(-400:400, 0, 100)
+    plot(-400:400, Pob_normal, type="l", main = "Distribución Normal media=0, sigma=100")
+    ```
+
+2.  Genera 150 datos aleatorios provenientes de una distribución normal con media cero y desviación estándar 100 y dibuja el histograma de los datos generados.
+
+    ```{r}
+    x1=rnorm(100,0,100)
+    hist(x1, col=0, main = "Distribución empírica de Normal media=0, sigma=100", freq=FALSE)
+    ```
+
+3.  Calcula el sesgo y la curtosis de los datos generados:
+
+    ```{r}
+    library (moments)
+    sg1 = skewness(x1)
+    k1 = kurtosis(x1)
+    ```

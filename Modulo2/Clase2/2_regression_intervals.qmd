@@ -1,0 +1,333 @@
+# Bandas de confianza y de predicción
+
+## Cómputo de las bandas de confianza y predicción
+
+**Ejemplo.** Supongamos que tenemos el vector $$x = \begin{bmatrix}
+1 \\ 2 \\ 3
+\end{bmatrix}$$ Para generar el vector de las observaciones dependientes, consideraremos un modelo de la forma $$Y_{0} = b_0 + b_1 X_{0} + \epsilon_{0}$$ con $b_0 = 0$, $b_1 = 1$ y suponiendo que $\epsilon_{0} \sim N(\mu,\sigma^{2})$ es una distribución normal con parámetros $\mu = 0$ y $\sigma = 0.3$ Redondeando a dos decimales, el vector resultante es:
+
+```{r}
+#| message: false
+library(tidyverse)
+set.seed(123)
+x_data <- c(1, 2, 3)
+epsilon_data <- rnorm(3, mean = 0, sd = 0.3)
+y_data <- x_data + epsilon_data
+sample_data_tbl <- tibble(
+  x = x_data,
+  y = y_data
+)
+round(y_data,2)
+```
+
+Así que para este ejemplo, consideraremos el vector de observaciones dependientes $$x = \begin{bmatrix}
+1 \\ 2 \\ 3
+\end{bmatrix} \qquad
+y = \begin{bmatrix}
+0.83 \\ 1.93 \\ 3.47
+\end{bmatrix}$$ Nos gustaría encontrar la recta que mejor se ajusta a estos datos de acuerdo al método de mínimos cuadrados y calcular sus bandas de confianza y predicción. Para esto empezaremos por considerar la matriz de diseño $$\Phi = \begin{bmatrix}
+1 & 1 \\
+1 & 2 \\
+1 & 3
+\end{bmatrix}$$ Necesitamos ahora calcular la matriz de coeficientes dada por $D^{2} = (\Phi^{T} \Phi)^{-1}$, empezaremos por calcular $$\Phi^{T} \Phi = 
+\begin{bmatrix}
+1 & 1 & 1 \\
+1 & 2 & 3
+\end{bmatrix}
+\begin{bmatrix}
+1 & 1 \\
+1 & 2 \\
+1 & 3
+\end{bmatrix} 
+ = \begin{bmatrix} 3 & 6 \\
+                                6 & 14
+                                \end{bmatrix}$$ Su inversa está entonces dada por: $$D^{2} = (\Phi^{T} \Phi)^{-1} = \frac{1}{3(14)-6(6)}\begin{bmatrix} 14 & -6 \\
+                                -6 & 3 \end{bmatrix} 
+                              = \frac{1}{6}\begin{bmatrix} 14 & -6 \\
+                                -6 & 3 \end{bmatrix}$$ En particular, $$d_{0}^{2} = \frac{14}{6} = \frac{7}{3} \qquad d_{1}^{2} = \frac{3}{6} = \frac{1}{2}$$ Calculamos ahora la matriz de estimadores de mínimos cuadrados $$A = D^{2}\Phi^{T} = \frac{1}{6} \begin{bmatrix}
+14 & -6 \\
+-6 & 3 
+\end{bmatrix} 
+\begin{bmatrix}
+1 & 1 & 1 \\
+1 & 2 & 3
+\end{bmatrix} = \frac{1}{6} \begin{bmatrix}
+8 & 2 & -4 \\
+-3 & 0 & 3
+\end{bmatrix}$$ y la matriz sombrero $$H = \Phi A =  \frac{1}{6} \begin{bmatrix}
+1 & 1 \\
+1 & 2 \\
+1 & 3
+\end{bmatrix}
+\begin{bmatrix}
+8 & 2 & -4 \\
+-3 & 0 & 3
+\end{bmatrix} = 
+\frac{1}{6} \begin{bmatrix}
+5 & 2 & -1 \\
+2 & 2 & 2 \\
+-1 & 2 & 5
+\end{bmatrix}$$ Con estas matrices podemos calcular ahora los estimadores puntuales $$\hat{\beta} = Ay = \frac{1}{6} 
+\begin{bmatrix}
+8 & 2 & -4 \\
+-3 & 0 & 3
+\end{bmatrix}
+\begin{bmatrix}
+0.83 \\ 1.93 \\ 3.47
+\end{bmatrix} =
+\begin{bmatrix}
+-0.56 \\
+1.32
+\end{bmatrix}$$
+
+Además de
+
+$$\hat{y} = Hy = \frac{1}{6} \begin{bmatrix}
+5 & 2 & -1 \\
+2 & 2 & 2 \\
+-1 & 2 & 5
+\end{bmatrix}\begin{bmatrix}
+0.83 \\ 1.93 \\ 3.47
+\end{bmatrix} =
+\begin{bmatrix}
+0.76 \\
+2.08 \\
+3.40
+\end{bmatrix}$$
+
+Finalmente, podemos calcular
+
+$$\mbox{SSE} = \|y-\hat{y}\|^{2} = 0.032$$
+
+Si comparamos ahora estos resultados con los obtenidos por R:
+
+```{r}
+model <- lm(y ~x, data = sample_data_tbl)
+beta_hat <-coef(model)
+y_hat <- fitted(model)
+sse <- deviance(model)
+beta_hat
+y_hat
+sse
+```
+
+podemos notar que (salvo errores de rendondeo) los resultados son idénticos.
+
+Ahora nos gustaría poder calcular los intervalos de confianza para $\hat{\beta}_{0}$ y $\hat{\beta}_{1}.$ Para poder lograr este objetivo, necesitamos convertir los cálculos que hemos hecho hasta ahora de manera puntual en cálculos que involucren variables aleatorias. Empezamos por introducir la variable de las observaciones dependientes
+
+$$Y=\begin{bmatrix}
+Y_{1} \\
+Y_{2} \\
+Y_{3}
+\end{bmatrix}$$
+
+Construirmos ahora las variables
+
+$$\hat{B}=\begin{bmatrix}
+\hat{B}_{0} \\
+\hat{B}_{1}
+\end{bmatrix} 
+ = AY = \frac{1}{6}
+\begin{bmatrix}
+8Y_{1} + 2 Y_{2} - 4 Y_{3} \\
+-3Y_{1} + 3Y_{3}
+\end{bmatrix}$$
+
+Sabemos que esta variable aleatoria tiene distribución
+
+$$\hat{B} \sim \mathcal{N}(b,\sigma^{2}D^{2})$$
+
+donde
+
+$$b=\begin{bmatrix}
+b_{0} \\
+b_{1}
+\end{bmatrix} = 
+\begin{bmatrix}
+0 \\
+1
+\end{bmatrix}$$
+
+En particular,
+
+$$\hat{B}_{0} \sim \mathcal{N}(b_0,\sigma^{2}d_{0}^{2})=
+\mathcal{N}(0,0.21)$$
+
+y
+
+$$\hat{B}_{1}\sim \mathcal(b_{1},\sigma^{2}d_{1}^{2})=
+\mathcal(1,0.045)$$
+
+Para continuar con nuestros cálculos, necesitamos ahora introducir el vector aleatorio
+
+$$\hat{Y} = HY=\frac{1}{6}
+\begin{bmatrix}
+5 & 2 & -1 \\
+2 & 2 & 2 \\
+-1 & 2 & 5
+\end{bmatrix}\begin{bmatrix}
+Y_{1} \\
+Y_{2} \\
+Y_{3}
+\end{bmatrix} = \frac{1}{6}
+\begin{bmatrix}
+5Y_{1} + 2 Y_{2} - Y_{3} \\
+2Y_{1} + 2Y_{2} +2 Y_{3} \\
+-Y_{1} + 2Y_{2} + 5Y_{3}
+\end{bmatrix}$$
+
+el cual podemos utilizar para construir el siguiente estimador para la varianza $\sigma^{2}$
+
+$$\hat{S}^{2} = \frac{1}{n-2}\|Y-\hat{Y}\|^{2} = \|Y-\hat{Y}\|^{2}$$
+
+en donde estamos utilizando que nuestros vectores tienen dimensión $n=3$ y por tanto tenemos solamente un grado de libertad. Notemos que cuando $Y=y$ es el vector de valores observados esta variable aleatoria toma el valor
+
+$$\hat{s}^{2}= \mbox{SSE} = 0.032$$
+
+En particular,
+
+$$\hat{s} = 0.18$$
+
+Por tanto, podemos utilizar este valor para calcular los valores de
+
+$$T_{0} = \frac{\hat{B}_{0}-b_{0}}{\hat{S}d_{0}} \sim t_{n-2}=t_{1}$$
+
+y
+
+$$T_{1} = \frac{\hat{B}_{1}-b_{1}}{\hat{S}d_{1}} \sim t_{n-2}=t_{1}$$
+
+los valores obtenidos son:
+
+$$t_{0} = -2.05$$
+
+y
+
+$$t_{1} = 2.52$$
+
+Los valores $p$ asociados a estos estadísticos son:
+
+$$p_{t_{0}} = 0.29 \qquad p_{t_{1}} = 0.24$$
+
+Para construir los intervalos de confianza, tomaremos $\alpha = 0.05$ y calculamos el estadístico $t$ asociado a este nivel de significancia para una prueba de dos colas:
+
+$$t_{\alpha/2,1} = 12.71 $$
+
+Se sigue que el intervalo de confianza para $b_{0}$ está dado por
+
+$$(\hat{\beta}_{0} - t_{\alpha/2, 1}\, d_{0}\, \hat{s}, \hat{\beta}_{0} + t_{\alpha/2, 1}\, d_{0}\, \hat{s}) = (-4.03, 2.91)$$
+
+Mientras que el intervalo de confianza para $b_{1}$ está dado por
+
+$$(\hat{\beta}_{1} - t_{\alpha/2, 1}\, d_{1}\, \hat{s}, \hat{\beta}_{1} + t_{\alpha/2, 1}\, d_{1}\, \hat{s}) = (-0.29, 2.92)$$
+
+Para construir ahora las bandas de confianza y predicción, notemos que para nuestro vector $x$ tenemos que
+
+$$\bar{x} = 2 \qquad s_{xx} = 2$$
+
+Como
+
+$$\hat{Y}_{0} \sim \mathcal{N}(b_{0}+b_{1}X_{0}, \sigma^{2}d_c^{2})$$
+
+donde
+
+$$d_{c}^{2} = \frac{1}{n}+\frac{(X_{0}-\bar{x})^{2}}{s_{xx}} = \frac{1}{3}+\frac{(X_{0}-2)^{2}}{2}$$
+
+Se sigue que el estadístico
+
+$$T_{c} = \frac{\hat{Y}_{0}-(b_{0}+b_{1}X_{0})}{\hat{s} d_{c}} \sim t_{n-2}=t_{1}$$
+
+En particular, el intervalo de confianza para la media en un punto dado $X_{0} = x_{0}$ está dado por
+
+$$(\hat{\beta_{0}} + \hat{\beta_{1}}\, x_{0} -  \hat{s}\, t_{\alpha/2,1}d_{c},\hat{\beta_{0}} + \hat{\beta}_{1}\, x_{0} +  \hat{s}\, t_{\alpha/2,1} d_{c}) $$
+
+que en nuestro caso corresponde al intervalo
+
+$$ (-0.56 + 1.32x_{0} - 0.93\, \sqrt{2+3(x_{0}-2)^{2}}, -0.56 + 1.32x_{0} + 0.93\, \sqrt{2+3(x_{0}-2)^{2}})$$
+
+Similarmente, el intervalo de predicción está dado por
+
+$$ (-0.56 + 1.32x_{0} - 0.93\, \sqrt{8+3(x_{0}-2)^{2}}, -0.56 + 1.32x_{0} + 0.93\, \sqrt{8+3(x_{0}-2)^{2}})$$
+
+```{r}
+#| fig-cap: "Ajuste por mínimos cuadrados"
+#| fig-width:  10
+#| fig-height: 5
+#| message: false
+
+x_band <- seq(-3, 7, length.out = 200)
+
+x_0 <- runif(1,-3,7)
+epsilon_0 <- rnorm(1, mean = 0, sd = 0.3)
+y_0 <- x_0 + epsilon_0
+
+new_data_tbl <- tibble(x = x_0, y = y_0)
+
+confidence_upper <- function(X0){
+  -0.56+1.32*X0+0.93*sqrt(2+3*(X0-2)*(X0-2))
+}
+
+confidence_lower <- function(X0){
+  -0.56+1.32*X0-0.93*sqrt(2+3*(X0-2)*(X0-2))
+}
+
+
+prediction_upper <- function(X0){
+  -0.56+1.32*X0+0.93*sqrt(8+3*(X0-2)*(X0-2))
+}
+
+prediction_lower <- function(X0){
+  -0.56+1.32*X0-0.93*sqrt(8+3*(X0-2)*(X0-2))
+}
+
+adjusted_line <- function(X0){
+  -0.56 + 1.32*X0
+}
+
+y_prediction_upper <- prediction_upper(x_band)
+y_prediction_lower <- prediction_lower(x_band)
+y_confidence_upper <- confidence_upper(x_band)
+y_confidence_lower <- confidence_lower(x_band)
+y_adjusted_line <- adjusted_line(x_band)
+
+lines_tbl <- bind_rows(
+  tibble(x = x_band, y = y_prediction_upper,
+         type = "Banda de predicción", curve = "pred_sup"),
+  tibble(x = x_band, y = y_prediction_lower,
+         type = "Banda de predicción", curve = "pred_inf"),
+  tibble(x = x_band, y = y_confidence_upper,
+         type = "Banda de confianza", curve = "conf_sup"),
+  tibble(x = x_band, y = y_confidence_lower,
+         type = "Banda de confianza", curve = "conf_inf"),
+  tibble(x = x_band, y = y_adjusted_line,
+         type = "Recta ajustada",    curve = "ajustada"),
+  tibble(x = x_band, y = x_band,
+         type = "Recta esperada",    curve = "esperada")
+)
+
+sample_data_plot <- sample_data_tbl %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_line(
+    data = lines_tbl,
+    aes(x = x, y = y, color = type, group = curve),
+    linewidth = 1
+  ) +
+  scale_color_manual(
+    values = c(
+      "Banda de predicción" = "#1B681B",
+      "Banda de confianza" = "#8A1B8A",
+      "Recta ajustada"      = "#67411B",
+      "Recta esperada"      = "#3B3BBB"
+    )
+  ) +
+  geom_point(color = "#B31B1B", size = 1.2, alpha = 1) +
+  geom_point(data = new_data_tbl, aes(x = x, y = y),color = "#B31B1B", size = 2, alpha = 1) +
+  labs(
+    title = "Gráfica con recta ajustada por mínimos cuadrados",
+    x = "x",
+    y = "y",
+    color = "Elementos de la gráfica"
+  ) +
+  theme_minimal()
+
+sample_data_plot
+```

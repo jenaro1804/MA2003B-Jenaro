@@ -1,0 +1,9 @@
+---
+title: "Actividad_1.2"
+format: html
+---
+
+## Actividad 1.2
+
+```{r}
+```

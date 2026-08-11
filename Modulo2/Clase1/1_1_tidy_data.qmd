@@ -1,0 +1,228 @@
+# Estructura y organización de datos
+
+Todo proyecto de ciencia de datos debe comenzar con la adquisición y organización de los conjuntos de datos requeridos. La forma en la que esta información se estructura y organiza puede tener un impacto significativo en la calidad del análisis que se desea desarrollar. En estas notas introduciremos los conceptos fundamentales del Tidyverse, un conjunto de herramientas en R que facilita la manipulación y visualización de datos siguiendo principios específicos de estructura y organización.
+
+## 1. Datos ordenados
+
+La idea central detrás del diseño del Tidyverse es la definición de datos ordenados:
+
+**Definición.** *Datos ordenados* es una forma de estructurar un conjunto de datos para facilitar su uso. En datos ordenados:
+
+1.  Cada variable forma una columna.
+2.  Cada observación forma una fila.
+3.  Cada tipo de unidad observacional forma una tabla.
+
+Esta estructura facilita la manipulación, análisis y visualización de nuestra información, ya que se alinea con la forma en la que los datos se procesan típicamente en R.
+
+## 2. La gramática de los gráficos
+
+El concepto de la *gramática de los gráficos* proporciona un marco para entender cómo crear visualizaciones de forma sistemática ya que descompone el proceso de construir una gráfica en componentes como datos, estéticas, geometrías, estadísticas, coordenadas y temas. El paquete `ggplot2` implementa esta gramática en R, permitiendo construir visualizaciones complejas por capas. Cada capa corresponde a un aspecto específico de la gráfica y, en conjunto, forman la composición completa. Estas capas incluyen:
+
+1.  **Datos:** El conjunto a visualizar (usualmente un data frame o tibble). Es la fuente de información de la gráfica.
+
+2.  **Estéticas:** Mapeos que relacionan variables con propiedades visuales, por ejemplo:
+
+    - Posición en los ejes $x$ e $y$.
+
+    - Color, relleno.
+
+    - Tamaño, forma.
+
+    - Transparencia.
+
+    Estos mapeos definen *qué* datos se muestran y *cómo* se representan visualmente.
+
+3.  **Geometrías:** Objetos geométricos que muestran los datos; por ejemplo:
+
+    - `geom_point()` para diagramas de dispersión.
+
+    - `geom_line()` para gráficas de líneas.
+
+    - `geom_col()` para barras.
+
+    - `geom_histogram()` para histogramas.
+
+    La geometría controla *cómo* se dibujan los datos.
+
+4.  **Transformaciones estadísticas:** Cálculos opcionales aplicados a los datos antes de graficar, como:
+
+    - `stat_bin()` para agrupar en histogramas.
+    - `stat_smooth()` para ajustar curvas suaves.
+
+    Estos son pasos de preprocesamiento para la visualización.
+
+5.  **Escalas:** Definen cómo se traducen los valores a propiedades visuales; también controlan marcas de ejes, leyendas y guías.
+
+6.  **Coordenadas:** El sistema usado, como cartesiano (`coord_cartesian()`), polar (`coord_polar()`) o invertido (`coord_flip()`).
+
+7.  **Facetado:** Métodos para dividir los datos en subconjuntos y mostrar múltiples gráficas en una cuadrícula:
+
+    - `facet_wrap()`
+    - `facet_grid()`
+
+8.  **Etiquetas:** `labs()` agrega títulos, etiquetas de ejes y pies.
+
+9.  **Temas:** `theme()` controla la apariencia general (fuentes, fondo, rejillas).
+
+Cada capa puede combinarse y personalizarse para construir gráficas complejas y elegantes. Esta *gramática por capas* invita a pensar en la gráfica como una composición de componentes independientes en lugar de un objeto monolítico.
+
+## 3. Ejemplo: Ordenando el conjunto de datos `who`
+
+Antes de comenzar, debemos cargar las librerías necesarias y el conjunto de datos `who`:
+
+```{r}
+#| output: false
+#| message: false
+library(tidyverse)
+library(here)
+library(magrittr)
+library(kableExtra)
+
+options(scipen = 999) # Desactivar notación científica
+data(who)
+```
+
+Ahora podemos iniciar nuestro proceso de ordenamiento. El problema principal de este conjunto es que contiene variables (como "new_sp_m014") que no son muy claras y que incluyen más de una unidad de información.
+
+```{r}
+who |>
+  print()
+```
+
+Es por eso que necesitamos separar estas variables e introducir nombres más claros para ellas y para sus valores asociados.
+
+```{r}
+# Empezamos creando la variable "who_tidy"
+# que contiene el conjunto de datos de la OMS ya limpio
+who_tidy <- who |>
+  # Usamos pivot_longer para eliminar las variables que empiezan con "new"
+  # y usarlas como valores en su lugar
+  pivot_longer(
+    cols = starts_with("new"),
+    names_to = "key",
+    values_to = "cases",
+    values_drop_na = TRUE
+  ) |>
+  mutate(
+    key = if_else(
+      startsWith(key, "newrel"),
+      sub("newrel", "new_rel", key),
+      key
+    ),
+    cases = as.integer(cases)
+  ) |>
+  separate(key, into = c("new", "type", "sexage"), sep = "_") |>
+  separate(sexage, into = c("sex", "age"), sep = 1) |>
+  select(-new, -iso2, -iso3) |>
+  print()
+```
+
+Ahora queremos convertir las columnas "type", "sex" y "age" en factores. Empezamos construyendo las siguientes tablas de correspondencia:
+
+```{r}
+who_type_lookup_tbl <- tibble(
+  code = c("ep", "rel", "sn", "sp"),
+  label = c(
+    "TB extrapulmonar",
+    "Caso de recaída",
+    "TB pulmonar baciloscopía negativa",
+    "TB pulmonar baciloscopía positiva"
+  )
+)
+
+who_sex_lookup_tbl <- tibble(
+  code = c("f", "m"),
+  label = c("Mujer", "Hombre")
+)
+
+who_age_lookup_tbl <- tibble(
+  code = c(
+    "014",
+    "1524",
+    "2534",
+    "3544",
+    "4554",
+    "5564",
+    "65"
+  ),
+  label = c(
+    "0-14",
+    "15-24",
+    "25-34",
+    "35-44",
+    "45-54",
+    "55-64",
+    "65+"
+  )
+)
+```
+
+Utilizando estas tablas, podemos agregar ahora estas columnas a nuestro conjunto de datos:
+
+```{r}
+# Agregamos las columnas de factores como información adicional
+who_factor <- who_tidy |>
+  convert_codes_to_factor(
+    code_col = type,
+    lookup_tbl = who_type_lookup_tbl,
+    lookup_code_col = code,
+    lookup_label_col = label,
+    new_factor_col_name = Tipo
+  ) |>
+  convert_codes_to_factor(
+    code_col = sex,
+    lookup_tbl = who_sex_lookup_tbl,
+    lookup_code_col = code,
+    lookup_label_col = label,
+    new_factor_col_name = Sexo
+  ) |>
+  convert_codes_to_factor(
+    code_col = age,
+    lookup_tbl = who_age_lookup_tbl,
+    lookup_code_col = code,
+    lookup_label_col = label,
+    new_factor_col_name = Edad
+  ) |>
+  print()
+```
+
+Queremos usar esta información para analizar el número de casos de tuberculosis por tipo y sexo. Empezamos generando el tibble de frecuencias correspondiente:
+
+```{r}
+#| label: tbl-desc
+#| tbl-cap: "Número de casos de tuberculosis por tipo y sexo"
+
+who_type_sex_tbl <- who_factor |>
+  count(Tipo, Sexo, wt = cases, name = "Casos")
+
+kable(
+  who_type_sex_tbl,
+  booktabs = TRUE,
+) |>
+  kable_styling(latex_options = "hold_position")
+```
+
+Finalmente, usamos `ggplot2` para graficar esta información:
+
+```{r}
+#| fig-width: 12
+#| fig-height: 6
+#| fig-cap: "Esta gráfica muestra un análisis comparativo del número de casos de tuberculosis por tipo y sexo. Notemos que el número de casos es consistentemente mayor en la población masculina en todos los tipos de tuberculosis."
+
+# Generamos la gráfica usando ggplot2
+# Cada capa corresponde a una componente de la gramática de los gráficos
+who_type_sex_plot <- who_type_sex_tbl |>
+  ggplot(aes(x = Tipo, y = Casos, fill = Sexo)) +
+  geom_col(position = "dodge") +
+  c_scale_fill("C rose", "C blue") +
+  labs(
+    title = "Casos de tuberculosis por tipo y sexo",
+    x = "Tipo de tuberculosis",
+    y = "Casos",
+    fill = "Sexo"
+  ) +
+  theme_krul()
+
+# Visualizamos la gráfica
+who_type_sex_plot
+```
