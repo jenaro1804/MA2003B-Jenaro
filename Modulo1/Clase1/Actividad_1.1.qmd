@@ -1,11 +1,11 @@
 ---
-title: "Actividad"
-format: html
+title: "Actividad_1.1"
+format: pdf
 ---
 
-## Actividad 1.1 Normalidad univariada
+# Actividad 1.1 Normalidad univariada
 
-En la normalidad
+### En la normalidad
 
 1.  Dibuja el gráfico de la distribución normal con media cero y desviación estándar 100
 
@@ -27,4 +27,313 @@ En la normalidad
     library (moments)
     sg1 = skewness(x1)
     k1 = kurtosis(x1)
+    sg1
+    k1
     ```
+
+4.  Analiza la normalidad de los datos generados:
+
+    a.  Realiza la prueba de Jarque-Bera:
+
+    ```{r}
+    jarque.test(x1)
+    ```
+
+    b.  Dibuja el QQPlot:
+
+    ```{r}
+    qqnorm(x1, main = "QQ-Plot de datos Normales")
+    qqline(x1, col = "red")
+    ```
+
+5.  Interpreta:
+
+    a.  Compara el gráfico de la distribución teórica (punto A) con el gráfico de la distribución empírica (punto B), ¿en qué son iguales y en qué son diferentes?
+
+        Ambos graficos se parecen un poco en unas cosas y en otras difieren. En cuanto a las similitudes, las dos parecen casi simetricas y con su media en cero (con excepcion a los extremos de la grafica en el punto B) y las densidades parecen estar igualmente alrededor de los 0.004 y 0.003. L a mayor diferencia es que la curva en la distribución teórica es suave y en la empírica hay irregularidades claras en los extremos ya que unos bloques sobresalen y otros se quedan cortos. Creo yo que es por los pocos eventos muestreados. Si aumentaramos esos 150 quizas se acercaria mas a la teórica.
+
+    b.  Relaciona la distribución empírica (punto B) con los valores de sesgo y curtosis (punto C) y el QQPlot y la prueba de normalidad (punto D)
+
+        Primeramentem el sesgo cercano a 0 Indica que si existe cierta simetría que se puede ver en el grafico, y la curtosis cercana a 3 indica que tiene una forma mesocúrtica, propia de una distribucion normal. Y complementando, el QQPlot muestra los puntos alineados sobre la recta roja con ligeras desviaciones solo en los extremos. Y la prueba de Jarque-Bera al esta cerca al 0 y el p-value mayor a 0.05 podemos concluir que no se rechaza la H_0, por lo que no hay suficiente evidencia de que los datos no sean normales.
+
+### Fuera de la normalidad
+
+Selecciona 3 distribuciones no normales y sus parámetros de forma que su distribución:
+
+- Una que esté muy sesgada a la derecha: **Gamma(alfa = 0.5, beta = 1)**
+
+- Una que esté ligeramente sesgada a la derecha: **Gamma(alfa = 20, beta = 1)**
+
+- Una que esté sesgada a la izquierda: **Weibull(alfa = 10, beta = 1)**
+
+#### 1. Muy sesgada a la derecha: Gamma(alfa = 0.5, beta = 1)
+
+A.  Dibuja el gráfico de la distribución teórica
+
+    ```{r}
+    x = seq(0.01, 8, by = 0.01)
+    Pob_gamma1 = dgamma(x, 0.5, 1)
+    plot(x, Pob_gamma1, type="l", main = "Distribución Gamma alfa=0.5, beta=1")
+    ```
+
+B.  Genera 150 datos aleatorios y dibuja el histograma
+
+    ```{r}
+    x2 = rgamma(150, 0.5, 1)
+    hist(x2, col=0, main = "Distribución empírica de Gamma alfa=0.5, beta=1", freq=FALSE)
+    ```
+
+C.  Calcula el sesgo y la curtosis
+
+    ```{r}
+    sg2 = skewness(x2)
+    k2 = kurtosis(x2)
+    sg2
+    k2
+    ```
+
+D.  Analiza la normalidad
+
+    ```{r}
+    jarque.test(x2)
+    ```
+
+    ```{r}
+    qqnorm(x2, main = "QQ-Plot Gamma alfa=0.5, beta=1")
+    qqline(x2, col = "red")
+    ```
+
+E.  Interpreta
+
+    El histograma se concentra cerca de cero con una cola extremadamente larga hacia la derecha. Por eso obtenemos un sesgo muy positivo y una curtosis muy por encima de 3 lo que lo hace leptocúrtica. En el QQPlot los puntos forman una curva convexa bastante notoria y por los dos lados. Por ultimo, Jarque-Bera da un p-value casi igual a cero 0 asi que se rechaza H_0 y asi concluimos que los datos no son normales.
+
+#### 2. Ligeramente sesgada a la derecha: Gamma(alfa = 20, beta = 1)
+
+A.  Dibuja el gráfico de la distribución teórica
+
+    ```{r}
+    x = seq(5, 45, by = 0.05)
+    Pob_gamma2 = dgamma(x, 20, 1)
+    plot(x, Pob_gamma2, type="l", main = "Distribución Gamma alfa=20, beta=1")
+    ```
+
+B.  Genera 150 datos aleatorios y dibuja el histograma
+
+    ```{r}
+    x3 = rgamma(150, 20, 1)
+    hist(x3, col=0, main = "Distribución empírica de Gamma alfa=20, beta=1", freq=FALSE)
+    ```
+
+C.  Calcula el sesgo y la curtosis
+
+    ```{r}
+    sg3 = skewness(x3)
+    k3 = kurtosis(x3)
+    sg3
+    k3
+    ```
+
+D.  Analiza la normalidad
+
+    ```{r}
+    jarque.test(x3)
+    ```
+
+    ```{r}
+    qqnorm(x3, main = "QQ-Plot Gamma alfa=20, beta=1")
+    qqline(x3, col = "red")
+    ```
+
+E.  Interpreta
+
+    A primer vistazo esta grafica parece ser normal. Es casi simétrica aunque tiene un ligero sesgo a la derecha. El sesgo es positivo pero pequeño y la curtosis está muy cerca de 3 por lo que casi tiene una forma mesocúrtica. En el QQPlot los puntos se quedan sobre la recta menos en la parte de arriba. La prueba de Jarque-Bera sorprendentemente no rechazar H0, porque aunque sabemos que la distribución no es normal, no hay suficiente potencia en la prueba que diga lo contrario.
+
+#### 3. Sesgada a la izquierda: Weibull(alfa = 10, beta = 1)
+
+A.  Dibuja el gráfico de la distribución teórica
+
+    ```{r}
+    x = seq(0.2, 1.6, by = 0.001)
+    Pob_weibull = dweibull(x, 10, 1)
+    plot(x, Pob_weibull, type="l", main = "Distribución Weibull alfa=10, beta=1")
+    ```
+
+B.  Genera 150 datos aleatorios y dibuja el histograma
+
+    ```{r}
+    x4 = rweibull(150, 10, 1)
+    hist(x4, col=0, main = "Distribución empírica de Weibull alfa=10, beta=1", freq=FALSE)
+    ```
+
+C.  Calcula el sesgo y la curtosis
+
+    ```{r}
+    sg4 = skewness(x4)
+    k4 = kurtosis(x4)
+    sg4
+    k4
+    ```
+
+D.  Analiza la normalidad
+
+    ```{r}
+    jarque.test(x4)
+    ```
+
+    ```{r}
+    qqnorm(x4, main = "QQ-Plot Weibull alfa=10, beta=1")
+    qqline(x4, col = "red")
+    ```
+
+E.  Interpreta
+
+    En esta distribucion larga está del lado izquierdo por lo que hay sesgo de ese lado. Los datos se acumulan en su mayoria en los valores altos. El sesgo es negativo y la curtosis queda un poco arriba del 3 lo que sugiere una forma leptocúrtica. En el QQPlot los puntos forman una ligera curva sobre todo al principio. Por ello el sesgo a la izquierda. Y la prueba de Jarque-Bera sale disparadisima pero el p-value es menor a 0.05, por lo que sabemos que esta distribucion no es normal, se rechaza H_0.
+
+### Conclusión
+
+Emite una conclusión de cómo se relaciona la curtosis y el sesgo con la distribución QQPlot y con la prueba de hipótesis de Jarque-Bera.
+
+El sesgo, la curtosis, el QQPlot y la prueba de Jarque-Bera son cuatro lecturas de la misma cosa. Por eso siempre concuerdan y tienen sentido. Y aunque a simple vista ciertas distribuciones parecen ser normales, es necesario correr las pruebas para poder asegurarnos de que lo son o no. Las pruebas determinan distintas cosas, el sesgo dice la dirección de la curvatura y se refleja en el QQPlot. Un sesgo cercano a 0 deja los puntos alineados sobre la recta, como en la Normal. Ambas se relacionan. Despues la curtosis muestra la forma de los extremos y los picos. Como ya vimos. una curtosis mayor a 3 es de forma Leptocúrtica, una de exactamente 3 es mesocúrtica (propia de una normal) y una menor a tres es platicúrtica. Siguiendo con la prueba de Jarque-Bera, esta resume las dos pasadas medidas con un solo número. La cifra del estadístico crece cuando el sesgo se aleja de 0 o cuando la curtosis se aleja de 3 y de la misma forma, mientras más se despegan los puntos del QQPlot de la recta, la cifra de JB es mayor y menor es el p-value. Al saber que todo esta conectado lo que conviene siempre es hacer una analisis con la vista y junto con los estadísticos. Asi nos aseguramos de no equivocarnos y obtenemos una respuesta confiable. Pero es importante mencionar que para mas acertividad necesitamos hacer todas las pruebas.
+
+### Normalidad de los datos de cars
+
+Accede a los datos de cars en R. La base de datos cars dan la velocidad de los automóviles y las distancias necesarias para detenerse de modelos existentes en 1920. Analiza normalidad:
+
+```{r}
+library(nortest)
+library(e1071)
+data(cars)
+velocidad = cars$speed
+distancia = cars$dist
+summary(cars)
+```
+
+1.  Velocidad:
+
+    ```{r}
+    shapiro.test(velocidad)
+    ad.test(velocidad)
+    lillie.test(velocidad)
+    jarque.test(velocidad)
+    ```
+
+2.  Distancia:
+
+    ```{r}
+    shapiro.test(distancia)
+    ad.test(distancia)
+    lillie.test(distancia)
+    jarque.test(distancia)
+    ```
+
+    Las pruebas de Shapiro-Wilk, Anderson-Darling, Kolmogorov-Smirnov y Jarque-Bera ya vienen implementadas en R. La prueba de Ryan-Joiner no está en ningún paquete base, asi que explícitamente me auxilie de Claude Code para poder calcular a partir de su definición encontrada en las diapositivas vistas en clase.
+
+    ```{r}
+    ryan.joiner = function(datos){
+      n = length(datos)
+      x = sort(datos)
+      b = qnorm((1:n - 3/8)/(n + 1/4))                       # cuantiles normales esperados
+      Rp = cor(x, b)                                         # estadístico de Ryan-Joiner
+      VC = 1.0063 - 0.1288/sqrt(n) - 0.6118/n + 1.3505/n^2   # valor crítico, alfa = 0.05
+      cat("Ryan-Joiner: Rp =", round(Rp, 4), "  Valor crítico (alfa=0.05) =", round(VC, 4), "\n")
+      cat(ifelse(Rp > VC, "Rp > VC: no se rechaza H0, los datos son normales\n",
+                 "Rp < VC: se rechaza H0, los datos no son normales\n"))
+    }
+    ```
+
+    ```{r}
+    ryan.joiner(velocidad)
+    ryan.joiner(distancia)
+    ```
+
+3.  Elabora el QQPlot para cada variable
+
+    ```{r}
+    qqnorm(velocidad, main = "QQ-Plot de la velocidad")
+    qqline(velocidad, col = "red")
+    ```
+
+    ```{r}
+    qqnorm(distancia, main = "QQ-Plot de la distancia")
+    qqline(distancia, col = "red")
+    ```
+
+    Los puntos en la grafica de velocidad se mantienen pegados a la recta a lo largo de esta pero con poca desviacion en los dos de los extremos. Los de la distancia siguen la recta en la parte central pero se despegan hacia arriba la parte derecha. Asi sabemos graficamente que hay un ligero sesgo positivo.
+
+4.  Calcula el coeficiente de sesgo y el coeficiente de curtosis para cada variable.
+
+    ```{r}
+    sesgo_vel = skewness(velocidad)
+    curt_vel = kurtosis(velocidad)
+    sesgo_dist = skewness(distancia)
+    curt_dist = kurtosis(distancia)
+    sesgo_vel
+    curt_vel
+    sesgo_dist
+    curt_dist
+    ```
+
+    La velocidad tiene un sesgo prácticamente inexistente por lo que casi simétrica, y una curtosis negativa relacionado con la forma platicúrtica. La distancia tiene un sesgo positivo que nso asegura que estamos correctos cuando afirmamos lo de la cola derecha que se ve en el QQPlot. Ademas tiene una curtosis cercana a 0 por lo que tambien es de forma platicúrtica.
+
+5.  Calcula y compara las medidas de media, mediana y rango medio para cada variable.
+
+    ```{r}
+    medidas = data.frame(
+      Variable = c("Velocidad", "Distancia"),
+      Media = c(mean(velocidad), mean(distancia)),
+      Mediana = c(median(velocidad), median(distancia)),
+      Rango_medio = c((min(velocidad) + max(velocidad))/2,
+                      (min(distancia) + max(distancia))/2)
+    )
+    medidas
+    ```
+
+    En una distribución perfectamente simétrica las tres medidas deben de coincidir, pero en nuestro caso, la velocidad son casi iguales y respalda la simetría antes mencionada. En la distancia la brecha es grande. La media crece por los valores grandes y el rango lo hace aun mas.
+
+6.  Elabora el diagrama de box plot para cada variable.
+
+    ```{r}
+    boxplot(velocidad, horizontal = TRUE, main = "Boxplot de la velocidad", col = "lightblue")
+    ```
+
+    ```{r}
+    boxplot(distancia, horizontal = TRUE, main = "Boxplot de la distancia", col = "lightgreen")
+    ```
+
+    El boxplot de la velocidad tiene la mediana despsplazada para la izquierda pero casi al centro de la caja y bigotes de longitud similares. Asi sabemos que no hay datos atipicos. Pero en la distancia esto cambia ya que la mediana esta recorrida hacia la izquierda de la caja y el bigote derecho más largo. Ademas de que podemos ver un punto en el extremo derecho.
+
+7.  Realiza el histograma y su distribución teórica de probabilidad.
+
+    ```{r}
+    hist(velocidad, freq=FALSE, main = "Histograma de la velocidad", xlab = "velocidad")
+    lines(density(velocidad), col="red")
+    curve(dnorm(x, mean=mean(velocidad), sd=sd(velocidad)), from=min(velocidad), to=max(velocidad), add=TRUE, col="blue", lwd=2)
+    ```
+
+    ```{r}
+    hist(distancia, freq=FALSE, main = "Histograma de la distancia", xlab = "distancia")
+    lines(density(distancia), col="red")
+    curve(dnorm(x, mean=mean(distancia), sd=sd(distancia)), from=min(distancia), to=max(distancia), add=TRUE, col="blue", lwd=2)
+    ```
+
+    En la velocidad la densidad empírica (roja) sigue de cerca la curva normal teórica (azul) casi igual. Tienen el mismo centro aunque la empirica no sube tanto. Tambien parecen tener una amplitud similar y colas parecidas. Pero en la distancia la densidad empírica está mas a la izquierda en comparacion a la teórica. Tienen un centro diferente y la empirica tiene un pico mas notorio y una cola derecha que se extiende más que la curva azul. Incluso la empirica asigna probabilidad a valores negativos de distancia que ni siquiera se pueden ver en la grafica. Esto no tienen sentido físico
+
+8.  Conclusión final sobre la normalidad de los datos
+
+    Todas las herramientas que aplicamos apuntan en la misma dirección para cada variable, y por eso podemos concluir con seguridad. En el caso de la velocidad, el sesgo cercano a 0, la curtosis en exceso cercana a 0, la coincidencia entre media, mediana y rango medio, el boxplot simétrico y sin datos atípicos, el QQPlot alineado sobre la recta y los p-values altos de Shapiro-Wilk, Anderson-Darling, Lilliefors y Jarque-Bera, junto con el Rp de Ryan-Joiner por encima de su valor crítico, llevan todos a la misma conclusión: no se rechaza la hipótesis de normalidad, así que la velocidad puede modelarse razonablemente con una distribución normal. En cambio, para la distancia el panorama es distinto, ya que el sesgo positivo, el orden mediana \< media \< rango medio, el bigote derecho largo con un dato atípico, la curvatura convexa del QQPlot y el histograma con cola derecha coinciden en describir una distribución asimétrica a la derecha, y las pruebas formales lo confirman porque Shapiro-Wilk y Anderson-Darling rechazan H0 al 5%, aunque Jarque-Bera queda más cerca del límite por ser menos potente ante desviaciones moderadas con n = 50. Por lo tanto, la distancia no es normal. Esto tiene sentido desde el fenómeno mismo, pues la distancia de frenado no puede ser negativa y crece de forma aproximadamente cuadrática con la velocidad, de modo que su distribución queda acotada por abajo y con una cola larga por arriba; de hecho, una transformación como el logaritmo o la raíz cuadrada acercaría estos datos a la normalidad. Al final, el ejercicio deja ver que ninguna prueba por sí sola basta, y que los estadísticos de forma, los gráficos y las pruebas de hipótesis deben leerse en conjunto, sobre todo cuando el p-value cae cerca de 0.05.
+
+### Declaratoria de uso de IA durante el desarrollo del trabajo
+
+**Opción B. Se utilizó IA.**
+
+1.  **Herramienta:** Claude Code con modelo Claude Opus 5, utilizada desde la terminal.
+
+2.  **Uso realizado:** Principalmente Claude Code se usó para la generación de códigos en R, dando las instrucciones necesarias para que el código fuese correcto y auditando los con la documentación oficial de R. Como contexto en el por qué usé Claude Code para la generación de códigos, Quiero mencionar que soy un estudiante de Campus Guadalajara, transferido el pasado cuarto semestre, y no usé R en ninguno de mis cursos previos salvo al BT1013, que tenía una duración de solo cinco semanas. Dicho en pocas palabras, no se R. También fue usado para instalar las dependencias necesarias y también para resolver el problema de por qué la prueba de normalidad de Ryan Joiner no estaba disponible en los paquetes base. Por esto le pedí a Claude Code que generara la descripcion del metodo conforme a la descripción vista en clase y la audite con las diapositivas correspondientes.
+
+3.  **Secciones donde se utilizó:** Principalmente sucedió en la parte de "Normalidad de los datos de cars" ya que era la parte en la actividad que no venía acompañada con código. Tambien en la parte de "Fuera de la normalidad" La usé para generar el código de las otras distribuciones generadas, pero usando mis parámetros que escogí personalmente. Tambien como mencione previamente se uso para hacer la función la función `ryan.joiner()`.
+
+4.  **Validación realizada:** Ejecute el documento completo en R y, entre el uso de la documentación y la validación de mi hermano mayor, graduado de ingeniería mecatrónica también de parte del TEC, analicé el código y auditamos que todo coincidiera con la salida real. La función de Ryan Joiner se verificó con las diapositivas de clase, confirmando que la fórmula fuese correcta.
+
+5.  **Confirmación:** En este apartado confirmo que se revisó, se verificó y que asumo la responsabilidad del contenido final entregado.
+
+6.  **Otro:** las interpretaciones, conclusiones y descripciones de los gráficos fueron redactadas 100% con mi criterio propio y tomando en cuenta el resultado de todas las celdas de código.
