@@ -1,9 +1,870 @@
 ---
 title: "Actividad_1.2"
-format: html
+format: pdf
 ---
 
-## Actividad 1.2
+# Actividad 1.1 Normalidad univariada
+
+### En la normalidad
+
+1.  Dibuja el gráfico de la distribución normal con media cero y desviación estándar 100
+
+    ```{r}
+    Pob_normal = dnorm(-400:400, 0, 100)
+    plot(-400:400, Pob_normal, type="l", main = "Distribución Normal media=0, sigma=100")
+    ```
+
+2.  Genera 150 datos aleatorios provenientes de una distribución normal con media cero y desviación estándar 100 y dibuja el histograma de los datos generados.
+
+    ```{r}
+    x1=rnorm(100,0,100)
+    hist(x1, col=0, main = "Distribución empírica de Normal media=0, sigma=100", freq=FALSE)
+    ```
+
+3.  Calcula el sesgo y la curtosis de los datos generados:
+
+    ```{r}
+    library (moments)
+    sg1 = skewness(x1)
+    k1 = kurtosis(x1)
+    sg1
+    k1
+    ```
+
+4.  Analiza la normalidad de los datos generados:
+
+    a.  Realiza la prueba de Jarque-Bera:
+
+    ```{r}
+    jarque.test(x1)
+    ```
+
+    b.  Dibuja el QQPlot:
+
+    ```{r}
+    qqnorm(x1, main = "QQ-Plot de datos Normales")
+    qqline(x1, col = "red")
+    ```
+
+5.  Interpreta:
+
+    a.  Compara el gráfico de la distribución teórica (punto A) con el gráfico de la distribución empírica (punto B), ¿en qué son iguales y en qué son diferentes?
+
+        Ambos graficos se parecen un poco en unas cosas y en otras difieren. En cuanto a las similitudes, las dos parecen casi simetricas y con su media en cero (con excepcion a los extremos de la grafica en el punto B) y las densidades parecen estar igualmente alrededor de los 0.004 y 0.003. L a mayor diferencia es que la curva en la distribución teórica es suave y en la empírica hay irregularidades claras en los extremos ya que unos bloques sobresalen y otros se quedan cortos. Creo yo que es por los pocos eventos muestreados. Si aumentaramos esos 150 quizas se acercaria mas a la teórica.
+
+    b.  Relaciona la distribución empírica (punto B) con los valores de sesgo y curtosis (punto C) y el QQPlot y la prueba de normalidad (punto D)
+
+        Primeramentem el sesgo cercano a 0 Indica que si existe cierta simetría que se puede ver en el grafico, y la curtosis cercana a 3 indica que tiene una forma mesocúrtica, propia de una distribucion normal. Y complementando, el QQPlot muestra los puntos alineados sobre la recta roja con ligeras desviaciones solo en los extremos. Y la prueba de Jarque-Bera al esta cerca al 0 y el p-value mayor a 0.05 podemos concluir que no se rechaza la H_0, por lo que no hay suficiente evidencia de que los datos no sean normales.
+
+### Fuera de la normalidad
+
+Selecciona 3 distribuciones no normales y sus parámetros de forma que su distribución:
+
+- Una que esté muy sesgada a la derecha: **Gamma(alfa = 0.5, beta = 1)**
+
+- Una que esté ligeramente sesgada a la derecha: **Gamma(alfa = 20, beta = 1)**
+
+- Una que esté sesgada a la izquierda: **Weibull(alfa = 10, beta = 1)**
+
+#### 1. Muy sesgada a la derecha: Gamma(alfa = 0.5, beta = 1)
+
+A.  Dibuja el gráfico de la distribución teórica
+
+    ```{r}
+    x = seq(0.01, 8, by = 0.01)
+    Pob_gamma1 = dgamma(x, 0.5, 1)
+    plot(x, Pob_gamma1, type="l", main = "Distribución Gamma alfa=0.5, beta=1")
+    ```
+
+B.  Genera 150 datos aleatorios y dibuja el histograma
+
+    ```{r}
+    x2 = rgamma(150, 0.5, 1)
+    hist(x2, col=0, main = "Distribución empírica de Gamma alfa=0.5, beta=1", freq=FALSE)
+    ```
+
+C.  Calcula el sesgo y la curtosis
+
+    ```{r}
+    sg2 = skewness(x2)
+    k2 = kurtosis(x2)
+    sg2
+    k2
+    ```
+
+D.  Analiza la normalidad
+
+    ```{r}
+    jarque.test(x2)
+    ```
+
+    ```{r}
+    qqnorm(x2, main = "QQ-Plot Gamma alfa=0.5, beta=1")
+    qqline(x2, col = "red")
+    ```
+
+E.  Interpreta
+
+    El histograma se concentra cerca de cero con una cola extremadamente larga hacia la derecha. Por eso obtenemos un sesgo muy positivo y una curtosis muy por encima de 3 lo que lo hace leptocúrtica. En el QQPlot los puntos forman una curva convexa bastante notoria y por los dos lados. Por ultimo, Jarque-Bera da un p-value casi igual a cero 0 asi que se rechaza H_0 y asi concluimos que los datos no son normales.
+
+#### 2. Ligeramente sesgada a la derecha: Gamma(alfa = 20, beta = 1)
+
+A.  Dibuja el gráfico de la distribución teórica
+
+    ```{r}
+    x = seq(5, 45, by = 0.05)
+    Pob_gamma2 = dgamma(x, 20, 1)
+    plot(x, Pob_gamma2, type="l", main = "Distribución Gamma alfa=20, beta=1")
+    ```
+
+B.  Genera 150 datos aleatorios y dibuja el histograma
+
+    ```{r}
+    x3 = rgamma(150, 20, 1)
+    hist(x3, col=0, main = "Distribución empírica de Gamma alfa=20, beta=1", freq=FALSE)
+    ```
+
+C.  Calcula el sesgo y la curtosis
+
+    ```{r}
+    sg3 = skewness(x3)
+    k3 = kurtosis(x3)
+    sg3
+    k3
+    ```
+
+D.  Analiza la normalidad
+
+    ```{r}
+    jarque.test(x3)
+    ```
+
+    ```{r}
+    qqnorm(x3, main = "QQ-Plot Gamma alfa=20, beta=1")
+    qqline(x3, col = "red")
+    ```
+
+E.  Interpreta
+
+    A primer vistazo esta grafica parece ser normal. Es casi simétrica aunque tiene un ligero sesgo a la derecha. El sesgo es positivo pero pequeño y la curtosis está muy cerca de 3 por lo que casi tiene una forma mesocúrtica. En el QQPlot los puntos se quedan sobre la recta menos en la parte de arriba. La prueba de Jarque-Bera sorprendentemente no rechazar H0, porque aunque sabemos que la distribución no es normal, no hay suficiente potencia en la prueba que diga lo contrario.
+
+#### 3. Sesgada a la izquierda: Weibull(alfa = 10, beta = 1)
+
+A.  Dibuja el gráfico de la distribución teórica
+
+    ```{r}
+    x = seq(0.2, 1.6, by = 0.001)
+    Pob_weibull = dweibull(x, 10, 1)
+    plot(x, Pob_weibull, type="l", main = "Distribución Weibull alfa=10, beta=1")
+    ```
+
+B.  Genera 150 datos aleatorios y dibuja el histograma
+
+    ```{r}
+    x4 = rweibull(150, 10, 1)
+    hist(x4, col=0, main = "Distribución empírica de Weibull alfa=10, beta=1", freq=FALSE)
+    ```
+
+C.  Calcula el sesgo y la curtosis
+
+    ```{r}
+    sg4 = skewness(x4)
+    k4 = kurtosis(x4)
+    sg4
+    k4
+    ```
+
+D.  Analiza la normalidad
+
+    ```{r}
+    jarque.test(x4)
+    ```
+
+    ```{r}
+    qqnorm(x4, main = "QQ-Plot Weibull alfa=10, beta=1")
+    qqline(x4, col = "red")
+    ```
+
+E.  Interpreta
+
+    En esta distribucion larga está del lado izquierdo por lo que hay sesgo de ese lado. Los datos se acumulan en su mayoria en los valores altos. El sesgo es negativo y la curtosis queda un poco arriba del 3 lo que sugiere una forma leptocúrtica. En el QQPlot los puntos forman una ligera curva sobre todo al principio. Por ello el sesgo a la izquierda. Y la prueba de Jarque-Bera sale disparadisima pero el p-value es menor a 0.05, por lo que sabemos que esta distribucion no es normal, se rechaza H_0.
+
+### Conclusión
+
+Emite una conclusión de cómo se relaciona la curtosis y el sesgo con la distribución QQPlot y con la prueba de hipótesis de Jarque-Bera.
+
+El sesgo, la curtosis, el QQPlot y la prueba de Jarque-Bera son cuatro lecturas de la misma cosa. Por eso siempre concuerdan y tienen sentido. Y aunque a simple vista ciertas distribuciones parecen ser normales, es necesario correr las pruebas para poder asegurarnos de que lo son o no. Las pruebas determinan distintas cosas, el sesgo dice la dirección de la curvatura y se refleja en el QQPlot. Un sesgo cercano a 0 deja los puntos alineados sobre la recta, como en la Normal. Ambas se relacionan. Despues la curtosis muestra la forma de los extremos y los picos. Como ya vimos. una curtosis mayor a 3 es de forma Leptocúrtica, una de exactamente 3 es mesocúrtica (propia de una normal) y una menor a tres es platicúrtica. Siguiendo con la prueba de Jarque-Bera, esta resume las dos pasadas medidas con un solo número. La cifra del estadístico crece cuando el sesgo se aleja de 0 o cuando la curtosis se aleja de 3 y de la misma forma, mientras más se despegan los puntos del QQPlot de la recta, la cifra de JB es mayor y menor es el p-value. Al saber que todo esta conectado lo que conviene siempre es hacer una analisis con la vista y junto con los estadísticos. Asi nos aseguramos de no equivocarnos y obtenemos una respuesta confiable. Pero es importante mencionar que para mas acertividad necesitamos hacer todas las pruebas.
+
+### Normalidad de los datos de cars
+
+Accede a los datos de cars en R. La base de datos cars dan la velocidad de los automóviles y las distancias necesarias para detenerse de modelos existentes en 1920. Analiza normalidad:
 
 ```{r}
+library(nortest)
+library(e1071)
+data(cars)
+velocidad = cars$speed
+distancia = cars$dist
+summary(cars)
 ```
+
+1.  Velocidad:
+
+    ```{r}
+    shapiro.test(velocidad)
+    ad.test(velocidad)
+    lillie.test(velocidad)
+    jarque.test(velocidad)
+    ```
+
+2.  Distancia:
+
+    ```{r}
+    shapiro.test(distancia)
+    ad.test(distancia)
+    lillie.test(distancia)
+    jarque.test(distancia)
+    ```
+
+    Las pruebas de Shapiro-Wilk, Anderson-Darling, Kolmogorov-Smirnov y Jarque-Bera ya vienen implementadas en R. La prueba de Ryan-Joiner no está en ningún paquete base, asi que explícitamente me auxilie de Claude Code para poder calcular a partir de su definición encontrada en las diapositivas vistas en clase.
+
+    ```{r}
+    ryan.joiner = function(datos){
+      n = length(datos)
+      x = sort(datos)
+      b = qnorm((1:n - 3/8)/(n + 1/4))                       # cuantiles normales esperados
+      Rp = cor(x, b)                                         # estadístico de Ryan-Joiner
+      VC = 1.0063 - 0.1288/sqrt(n) - 0.6118/n + 1.3505/n^2   # valor crítico, alfa = 0.05
+      cat("Ryan-Joiner: Rp =", round(Rp, 4), "  Valor crítico (alfa=0.05) =", round(VC, 4), "\n")
+      cat(ifelse(Rp > VC, "Rp > VC: no se rechaza H0, los datos son normales\n",
+                 "Rp < VC: se rechaza H0, los datos no son normales\n"))
+    }
+    ```
+
+    ```{r}
+    ryan.joiner(velocidad)
+    ryan.joiner(distancia)
+    ```
+
+3.  Elabora el QQPlot para cada variable
+
+    ```{r}
+    qqnorm(velocidad, main = "QQ-Plot de la velocidad")
+    qqline(velocidad, col = "red")
+    ```
+
+    ```{r}
+    qqnorm(distancia, main = "QQ-Plot de la distancia")
+    qqline(distancia, col = "red")
+    ```
+
+    Los puntos en la grafica de velocidad se mantienen pegados a la recta a lo largo de esta pero con poca desviacion en los dos de los extremos. Los de la distancia siguen la recta en la parte central pero se despegan hacia arriba la parte derecha. Asi sabemos graficamente que hay un ligero sesgo positivo.
+
+4.  Calcula el coeficiente de sesgo y el coeficiente de curtosis para cada variable.
+
+    ```{r}
+    sesgo_vel = skewness(velocidad)
+    curt_vel = kurtosis(velocidad)
+    sesgo_dist = skewness(distancia)
+    curt_dist = kurtosis(distancia)
+    sesgo_vel
+    curt_vel
+    sesgo_dist
+    curt_dist
+    ```
+
+    La velocidad tiene un sesgo prácticamente inexistente por lo que casi simétrica, y una curtosis negativa relacionado con la forma platicúrtica. La distancia tiene un sesgo positivo que nso asegura que estamos correctos cuando afirmamos lo de la cola derecha que se ve en el QQPlot. Ademas tiene una curtosis cercana a 0 por lo que tambien es de forma platicúrtica.
+
+5.  Calcula y compara las medidas de media, mediana y rango medio para cada variable.
+
+    ```{r}
+    medidas = data.frame(
+      Variable = c("Velocidad", "Distancia"),
+      Media = c(mean(velocidad), mean(distancia)),
+      Mediana = c(median(velocidad), median(distancia)),
+      Rango_medio = c((min(velocidad) + max(velocidad))/2,
+                      (min(distancia) + max(distancia))/2)
+    )
+    medidas
+    ```
+
+    En una distribución perfectamente simétrica las tres medidas deben de coincidir, pero en nuestro caso, la velocidad son casi iguales y respalda la simetría antes mencionada. En la distancia la brecha es grande. La media crece por los valores grandes y el rango lo hace aun mas.
+
+6.  Elabora el diagrama de box plot para cada variable.
+
+    ```{r}
+    boxplot(velocidad, horizontal = TRUE, main = "Boxplot de la velocidad", col = "lightblue")
+    ```
+
+    ```{r}
+    boxplot(distancia, horizontal = TRUE, main = "Boxplot de la distancia", col = "lightgreen")
+    ```
+
+    El boxplot de la velocidad tiene la mediana despsplazada para la izquierda pero casi al centro de la caja y bigotes de longitud similares. Asi sabemos que no hay datos atipicos. Pero en la distancia esto cambia ya que la mediana esta recorrida hacia la izquierda de la caja y el bigote derecho más largo. Ademas de que podemos ver un punto en el extremo derecho.
+
+7.  Realiza el histograma y su distribución teórica de probabilidad.
+
+    ```{r}
+    hist(velocidad, freq=FALSE, main = "Histograma de la velocidad", xlab = "velocidad")
+    lines(density(velocidad), col="red")
+    curve(dnorm(x, mean=mean(velocidad), sd=sd(velocidad)), from=min(velocidad), to=max(velocidad), add=TRUE, col="blue", lwd=2)
+    ```
+
+    ```{r}
+    hist(distancia, freq=FALSE, main = "Histograma de la distancia", xlab = "distancia")
+    lines(density(distancia), col="red")
+    curve(dnorm(x, mean=mean(distancia), sd=sd(distancia)), from=min(distancia), to=max(distancia), add=TRUE, col="blue", lwd=2)
+    ```
+
+    En la velocidad la densidad empírica (roja) sigue de cerca la curva normal teórica (azul) casi igual. Tienen el mismo centro aunque la empirica no sube tanto. Tambien parecen tener una amplitud similar y colas parecidas. Pero en la distancia la densidad empírica está mas a la izquierda en comparacion a la teórica. Tienen un centro diferente y la empirica tiene un pico mas notorio y una cola derecha que se extiende más que la curva azul. Incluso la empirica asigna probabilidad a valores negativos de distancia que ni siquiera se pueden ver en la grafica. Esto no tienen sentido físico
+
+8.  Conclusión final sobre la normalidad de los datos
+
+    Todas las herramientas que aplicamos apuntan en la misma dirección para cada variable, y por eso podemos concluir con seguridad. En el caso de la velocidad, el sesgo cercano a 0, la curtosis en exceso cercana a 0, la coincidencia entre media, mediana y rango medio, el boxplot simétrico y sin datos atípicos, el QQPlot alineado sobre la recta y los p-values altos de Shapiro-Wilk, Anderson-Darling, Lilliefors y Jarque-Bera, junto con el Rp de Ryan-Joiner por encima de su valor crítico, llevan todos a la misma conclusión: no se rechaza la hipótesis de normalidad, así que la velocidad puede modelarse razonablemente con una distribución normal. En cambio, para la distancia el panorama es distinto, ya que el sesgo positivo, el orden mediana \< media \< rango medio, el bigote derecho largo con un dato atípico, la curvatura convexa del QQPlot y el histograma con cola derecha coinciden en describir una distribución asimétrica a la derecha, y las pruebas formales lo confirman porque Shapiro-Wilk y Anderson-Darling rechazan H0 al 5%, aunque Jarque-Bera queda más cerca del límite por ser menos potente ante desviaciones moderadas con n = 50. Por lo tanto, la distancia no es normal. Esto tiene sentido desde el fenómeno mismo, pues la distancia de frenado no puede ser negativa y crece de forma aproximadamente cuadrática con la velocidad, de modo que su distribución queda acotada por abajo y con una cola larga por arriba; de hecho, una transformación como el logaritmo o la raíz cuadrada acercaría estos datos a la normalidad. Al final, el ejercicio deja ver que ninguna prueba por sí sola basta, y que los estadísticos de forma, los gráficos y las pruebas de hipótesis deben leerse en conjunto, sobre todo cuando el p-value cae cerca de 0.05.
+
+### Declaratoria de uso de IA durante el desarrollo del trabajo
+
+**Opción B. Se utilizó IA.**
+
+1.  **Herramienta:** Claude Code con modelo Claude Opus 5, utilizada desde la terminal.
+
+2.  **Uso realizado:** Principalmente Claude Code se usó para la generación de códigos en R, dando las instrucciones necesarias para que el código fuese correcto y auditando los con la documentación oficial de R. Como contexto en el por qué usé Claude Code para la generación de códigos, Quiero mencionar que soy un estudiante de Campus Guadalajara, transferido el pasado cuarto semestre, y no usé R en ninguno de mis cursos previos salvo al BT1013, que tenía una duración de solo cinco semanas. Dicho en pocas palabras, no se R. También fue usado para instalar las dependencias necesarias y también para resolver el problema de por qué la prueba de normalidad de Ryan Joiner no estaba disponible en los paquetes base. Por esto le pedí a Claude Code que generara la descripcion del metodo conforme a la descripción vista en clase y la audite con las diapositivas correspondientes.
+
+3.  **Secciones donde se utilizó:** Principalmente sucedió en la parte de "Normalidad de los datos de cars" ya que era la parte en la actividad que no venía acompañada con código. Tambien en la parte de "Fuera de la normalidad" La usé para generar el código de las otras distribuciones generadas, pero usando mis parámetros que escogí personalmente. Tambien como mencione previamente se uso para hacer la función la función `ryan.joiner()`.
+
+4.  **Validación realizada:** Ejecute el documento completo en R y, entre el uso de la documentación y la validación de mi hermano mayor, graduado de ingeniería mecatrónica también de parte del TEC, analicé el código y auditamos que todo coincidiera con la salida real. La función de Ryan Joiner se verificó con las diapositivas de clase, confirmando que la fórmula fuese correcta.
+
+5.  **Confirmación:** En este apartado confirmo que se revisó, se verificó y que asumo la responsabilidad del contenido final entregado.
+
+6.  **Otro:** las interpretaciones, conclusiones y descripciones de los gráficos fueron redactadas 100% con mi criterio propio y tomando en cuenta el resultado de todas las celdas de código.
+
+# Actividad 1.2 Normalidad univariada. Transformaciones para normalidad
+
+Con la base de datos `cars` efectúa una transformación de los datos que te garantice normalidad en ambas variables. Encuentra el valor de lambda en la transformación Box-Cox para el modelo lineal $Y = \beta_0 + \beta_1 X$, donde $Y$ es la distancia y $X$ la velocidad. Utiliza la transformación exacta y la aproximada de acuerdo con la transformación de Box y Cox.
+
+```{r}
+library(MASS)
+library(nortest)
+library(e1071)
+data(cars)
+velocidad = cars$speed
+distancia = cars$dist
+```
+
+### 1. Valor de lambda para el modelo lineal distancia \~ velocidad
+
+```{r}
+bc = boxcox(lm(distancia ~ velocidad), lambda = seq(-2, 2, 0.001))
+lambda = bc$x[which.max(bc$y)]
+lambda
+```
+
+El intervalo de confianza del 95% para lambda son los valores dentro de las líneas punteadas de la gráfica:
+
+```{r}
+IC = range(bc$x[bc$y > max(bc$y) - qchisq(0.95, 1)/2])
+IC
+```
+
+### 2. Transformación de la distancia
+
+#### 2.1 Transformación exacta
+
+Se usa el valor de lambda tal como lo devuelve la máxima verosimilitud:
+
+```{r}
+distancia_exacta = (distancia^lambda - 1)/lambda
+head(distancia_exacta)
+```
+
+#### 2.2 Transformación aproximada
+
+Nuestro intervalo de confianza si contiene 0.5. en el. Por eso el argumento de Box-Cox de redondear es correcto en este caso. La transformacion exacta y aporximada van a producir un efecto similar al aplicarse.
+
+```{r}
+lambda_aprox = 0.5
+distancia_aprox = (distancia^lambda_aprox - 1)/lambda_aprox
+head(distancia_aprox)
+```
+
+Aqui vemos las comparcaciones de sesgo y curtosis entre la distancia exacta y la aproximada:
+
+```{r}
+skewness(distancia_exacta) 
+skewness(distancia_aprox)
+kurtosis(distancia_exacta) 
+kurtosis(distancia_aprox)
+```
+
+### 3. Transformación de la velocidad
+
+Ya que transformamos la distancia, ahora falta transformar la velocidad y asegurarnos de que ambas transformaciones son normales. Asi que aplicamos Box-Cox a la velocidad ahora:
+
+```{r}
+bc_vel = boxcox(lm(velocidad ~ 1), lambda = seq(-2, 2, 0.001))
+lambda_vel = bc_vel$x[which.max(bc_vel$y)]
+lambda_vel
+```
+
+```{r}
+range(bc_vel$x[bc_vel$y > max(bc_vel$y) - qchisq(0.95, 1)/2])
+```
+
+Nuestro rango del intervalo de confianza es 0.418 y 1.1713 que tambien contiene el redondeo de $\lambda_v$ hacia $1$ debido a que $\lambda_v=1.029$
+
+#### 3.1 Transformación exacta
+
+Se usa el valor de lambda tal como lo devuelve la máxima verosimilitud:
+
+```{r}
+velocidad_exacta = (velocidad^lambda_vel - 1)/lambda_vel
+head(velocidad_exacta)
+```
+
+#### 3.2 Transformación aproximada
+
+Como el intervalo de confianza contiene a 1, se redondea lambda a ese valor. Con $\lambda = 1$ la transformación de Box-Cox se reduce a solo $X - 1$.
+
+```{r}
+lambda_vel_aprox = 1
+velocidad_aprox = (velocidad^lambda_vel_aprox - 1)/lambda_vel_aprox
+head(velocidad_aprox)
+```
+
+Aqui vemos las comparcaciones de sesgo y curtosis entre la velocidad exacta y la aproximada:
+
+```{r}
+skewness(velocidad_exacta)
+skewness(velocidad_aprox)
+kurtosis(velocidad_exacta)
+kurtosis(velocidad_aprox)
+```
+
+### 4. Ecuaciones de las transformaciones encontradas
+
+**Ecuacion de distancia como variable respuesta, transformación exacta**, con $\lambda = 0.431$:
+
+$$Y^{(\lambda)} = \frac{Y^{0.431} - 1}{0.431}$$
+
+**Transformación aproximada**, con $\lambda = 1/2$:
+
+$$Y^{(\lambda)} = \frac{Y^{1/2} - 1}{1/2} = 2\left(\sqrt{Y} - 1\right) \quad$$
+
+**Ecuacion de velocidad como variable respuesta, transformación exacta**, con $\lambda = 1.029$:**Velocidad**, con $\lambda = 1.029$ exacta:
+
+$$X^{(\lambda)} = \frac{X^{1.029} - 1}{1.029}$$
+
+**Transformación aproximada**, con $\lambda = 1$:
+
+$$\qquad X^{(1)} = X - 1$$
+
+### 5. Análisis de normalidad de las transformaciones obtenidas
+
+#### 5.1 Comparación de medidas
+
+Mínimo, cuartil 1, mediana, media, cuartil 3, máximo, sesgo y curtosis de los datos originales contra los dos modelos transformados:
+
+```{r}
+medidas = function(x){
+  q = quantile(x, c(0.25, 0.75))
+  c(Minimo = min(x), Q1 = q[[1]], Mediana = median(x), Media = mean(x),
+    Q3 = q[[2]], Maximo = max(x), Sesgo = skewness(x), Curtosis = kurtosis(x))
+}
+
+round(rbind(
+  Original   = medidas(distancia),
+  Exacta     = medidas(distancia_exacta),
+  Aproximada = medidas(distancia_aprox)
+), 4)
+```
+
+Aqui podemos observar varias cosas. Primero que nada, en una distribucion simetrica la mediana y la media coinciden. En nuestro caso son casi iguales. Los sesgos son casi cercanos a cero. La curtosis es preocupante ya que esos niveles cerca de $-3$ indica que tenemos una forma platicúrtica con colas ligeras.
+
+```{r}
+round(rbind(
+  Original   = medidas(velocidad),
+  Exacta     = medidas(velocidad_exacta),
+  Aproximada = medidas(velocidad_aprox)
+), 4)
+```
+
+Y lo mismo se repite con la velocidad. La mediana y media son muy cercanas, hay poco sesgo pero aqui la curtosis es aun mas preocupante.
+
+#### 5.2 Histogramas de los datos originales y de los dos modelos
+
+En rojo la densidad empírica y en azul la curva normal teórica con la media y la desviación estándar de cada conjunto.
+
+```{r}
+hist(distancia, freq = FALSE, main = "Distancia: datos originales", xlab = "distancia")
+curve(dnorm(x, mean(distancia), sd(distancia)), add = TRUE, col = "blue", lwd = 2)
+lines(density(distancia), col = "red")
+```
+
+```{r}
+hist(distancia_exacta, freq = FALSE, main = "Distancia: transformación exacta (lambda = 0.431)", xlab = "distancia transformada")
+curve(dnorm(x, mean(distancia_exacta), sd(distancia_exacta)), add = TRUE, col = "blue", lwd = 2)
+lines(density(distancia_exacta), col = "red")
+```
+
+```{r}
+hist(distancia_aprox, freq = FALSE, main = "Distancia: transformación aproximada (lambda = 0.5)", xlab = "distancia transformada")
+curve(dnorm(x, mean(distancia_aprox), sd(distancia_aprox)), add = TRUE, col = "blue", lwd = 2)
+lines(density(distancia_aprox), col = "red")
+```
+
+En los graficos de distribucion de la variable **Distancia** podemos ver claramente que los datos originales tienen un sesgo bastante marcado hacia la derecha y la empirica difere bastante con la teorica. Al ver la transformacion exacta vemos que la forma mejora notablemente. Hay un poco de sesgo a la izquierda lo que concuerda con las metricas antes obtenidas. Y en la transformacion exacta podemos ver que la curtosis es mayor ya que la curva es mas achatada. Pero en ambas transformaciones la empirica difiere poco con la teorica.
+
+```{r}
+hist(velocidad, freq = FALSE, main = "Velocidad: datos originales", xlab = "velocidad")
+curve(dnorm(x, mean(velocidad), sd(velocidad)), add = TRUE, col = "blue", lwd = 2)
+lines(density(velocidad), col = "red")
+```
+
+```{r}
+hist(velocidad_exacta, freq = FALSE, main = "Velocidad: transformación exacta (lambda = 1.029)", xlab = "velocidad transformada")
+curve(dnorm(x, mean(velocidad_exacta), sd(velocidad_exacta)), add = TRUE, col = "blue", lwd = 2)
+lines(density(velocidad_exacta), col = "red")
+```
+
+```{r}
+hist(velocidad_aprox, freq = FALSE, main = "Velocidad: transformación aproximada (lambda = 1)", xlab = "velocidad transformada")
+curve(dnorm(x, mean(velocidad_aprox), sd(velocidad_aprox)), add = TRUE, col = "blue", lwd = 2)
+lines(density(velocidad_aprox), col = "red")
+```
+
+En estos segundo graficos correspondientes con la variable de **Velocidad** podemos ver que en los datos originales hay un sesgo hacia la izquierda que concuerda con la cifra negativa obtenida de las metricas. Y la cirva empirica no tiene un pico como tal. Y lo mismo sucede en la tansformacion exacta y la aproximada. Solo que en la exacta el sego es practicamente inexistente. Su cruva teorica y la empirica difieren solo en el pico. Pero algo muy importante a recalcar es que en los seis graficos la curva empirica sale del marco, y sobre todo lo que llama la atencion es que sale para el lado negativo en el eje x lo cual no tiene sentido alguno ya que no podemos tener distancias ni velocidad negativias. Esto es un primer indicio de tener datos atipicos.
+
+#### 5.3 Pruebas de normalidad para los datos transformados
+
+Distancia transformada:
+
+```{r}
+shapiro.test(distancia)
+ad.test(distancia)
+lillie.test(distancia)
+```
+
+```{r}
+shapiro.test(distancia_exacta)
+ad.test(distancia_exacta)
+lillie.test(distancia_exacta)
+```
+
+```{r}
+shapiro.test(distancia_aprox)
+ad.test(distancia_aprox)
+lillie.test(distancia_aprox)
+```
+
+Velocidad transformada:
+
+```{r}
+shapiro.test(velocidad)
+ad.test(velocidad)
+lillie.test(velocidad)
+```
+
+```{r}
+shapiro.test(velocidad_exacta)
+ad.test(velocidad_exacta)
+lillie.test(velocidad_exacta)
+```
+
+```{r}
+shapiro.test(velocidad_aprox)
+ad.test(velocidad_aprox)
+lillie.test(velocidad_aprox)
+```
+
+La variable **Distancia** tiene el mayor cambio. Los datos originales (sin modificar) dan p-valores bastante cercanos a 0.05. Incluso unos menores. Con la prueba de Shapiro y de Smirnov ya se rechazaba la $H_0$. Y Despues de la transformacion los p-valores estan rondando los 0.90s, tanto en la exact como en la aproximada. Esto nos dice que la transformacion si cumplio su objetivo, ya que los nuevos valores estan bastante alejados del limite de 0.05.
+
+Por otro lado, la variable de **Velocidad** no tuvo problemas, inluso antes de someterla a las transformaciones, ya que sus p-valores iniciales fueron -0.46, 0.69 y 0.80. Todavia, despues de aplicar las transformaciones, los p-valores se quedaron practicamente igual porque hubo poca variacion. La unica observacion interesante de esta variable es que los p-valores originales son iguale a los p-valores de la transformacion aproximada. Esto porque la transformacion se redujo a solamente $X -1$ y restarle una constante no hace que la distribucion cambie. Solo sus valores puntuales. Por esto podemos concluir con certeza que la velocidad no era necesaria transformarse
+
+#### 5.4 QQPlots de las transformaciones
+
+```{r}
+qqnorm(distancia_exacta, main = "QQ-Plot distancia, transformación exacta")
+qqline(distancia_exacta, col = "red")
+```
+
+```{r}
+qqnorm(distancia_aprox, main = "QQ-Plot distancia, transformación aproximada")
+qqline(distancia_aprox, col = "red")
+```
+
+```{r}
+qqnorm(velocidad_exacta, main = "QQ-Plot velocidad, transformación exacta")
+qqline(velocidad_exacta, col = "red")
+```
+
+```{r}
+qqnorm(velocidad_aprox, main = "QQ-Plot velocidad, transformación aproximada")
+qqline(velocidad_aprox, col = "red")
+```
+
+De la misma manera que la anterior prueba y al estar todo conectado, vemos que la **Distancia** si mejor su QQPlot al usar las transformaciones a comparacion del QQPlot original hecho en la Actividad 1.1. En estos nuevos QQPlots podemos ver los puntos muy cerca de la linea y con poca variacion que podemos alcanzar a notar en las puntas.
+
+Y en cuanto a la **velocidad,** los QQplots con las transformaciones son identicos, al igual con el QQPlot original tambien graficado en la Actividad 1.1. Lo unico que resalta es la forma peculiar de escalera que parece tener los puntos, pero eso se debe a que las mediciones son enteras. No hay decimales.
+
+Los QQPlots resultan ser otro respaldo de que las distribuciones si son normales.
+
+### 6. Detección y corrección de anomalías
+
+Con todas las pruebas anteriores podemos afirmar que contamos con distribuciones normales para ambas variables por lo que no es necesario repetir el proceso de investigacion y la obtencion de las $\lambda$.
+
+Aun así puede que exisan datos atípicos. Por esto usaremos un boxplot para analizar visualmente:
+
+```{r}
+boxplot(distancia, distancia_exacta, distancia_aprox,
+        names = c("original", "exacta", "aproximada"),
+        main = "Boxplot de la distancia antes y después de transformar",
+        col = c("lightgray", "lightgreen", "lightblue"))
+```
+
+```{r}
+boxplot(velocidad, velocidad_exacta, velocidad_aprox,
+        names = c("original", "exacta", "aproximada"),
+        main = "Boxplot de la distancia antes y después de transformar",
+        col = c("lightgray", "lightgreen", "lightblue"))
+```
+
+El boxplot de la variable **Velocidad** no tiene ningun elemento inusual. Pero el boxplot de la variable **Distancia** tiene un punto bastante extremo en cada una de las distribuciones. Sin embargo, estos puntos no los considero outliers por completo ya que las mediciones de estos puntos si son fisicamente posibles. Es decir, son datos reales pero muy extremos. Ademas, cabe recalcar de que este no es el mismo punto para los tres tipos de distribuciones.
+
+### 7. Transformación de Yeo-Johnson
+
+La transformación de Yeo-Johnson ya viene implementada en la biblioteca VGAM:
+
+```{r}
+library(VGAM)
+```
+
+Como punto de partida se usa la lambda que ya habíamos encontrado con Box-Cox ($\lambda = 0.431$):
+
+```{r}
+distancia_yj_bc = yeo.johnson(distancia, lambda = lambda)
+head(distancia_yj_bc)
+shapiro.test(distancia_yj_bc)
+```
+
+#### 7.1 Valor de lambda que maximiza el valor p
+
+Lambda toma valores entre $-0$ y $2$ con un step de $0.001$, para así checar todos los valores dentro del rango y quedarnos con la lamda maxima que obtengamos:
+
+```{r}
+l = seq(0, 2, 0.001)
+N = data.frame(Lambda = l,
+               `Valor-p` = sapply(l, function(i) shapiro.test(yeo.johnson(distancia, lambda = i))$p.value),
+               check.names = FALSE)
+head(N)
+```
+
+Extraemos el maximo:
+
+```{r}
+G = data.frame(subset(N, N$`Valor-p` == max(N$`Valor-p`)))
+G
+lambda_yj = G$Lambda
+```
+
+La $\lambda$ que produce el mayor p-valor dentro del rango que escogimos es 0.483.
+
+```{r}
+plot(N$Lambda, N$`Valor-p`, type = "l",
+     main = "Valor p de Shapiro-Wilk en función de lambda (Yeo-Johnson)",
+     xlab = "lambda", ylab = "valor p")
+abline(v = lambda_yj, col = "red", lty = 2)
+abline(h = 0.05, col = "blue", lty = 3)
+```
+
+Con esa lambda se transforma la variable:
+
+```{r}
+distancia_yj = yeo.johnson(distancia, lambda = lambda_yj)
+head(distancia_yj)
+```
+
+#### 7.2 Ecuación de la transformación encontrada
+
+Como todos los datos de distancia son positivos, solo aplica la primera rama. Con $\lambda = 0.483$:
+
+$$X = \frac{(\text{X} + 1)^{0.483} - 1}{0.483}$$
+
+#### 7.3 Análisis de normalidad de la transformación obtenida
+
+```{r}
+round(medidas(distancia_yj), 4)
+```
+
+```{r}
+shapiro.test(distancia_yj)
+ad.test(distancia_yj)
+lillie.test(distancia_yj)
+```
+
+```{r}
+hist(distancia_yj, freq = FALSE, main = "Distancia: Yeo-Johnson (lambda = 0.483)", xlab = "distancia transformada")
+curve(dnorm(x, mean(distancia_yj), sd(distancia_yj)), add = TRUE, col = "blue", lwd = 2)
+lines(density(distancia_yj), col = "red")
+```
+
+```{r}
+qqnorm(distancia_yj, main = "QQ-Plot distancia, Yeo-Johnson")
+qqline(distancia_yj, col = "red")
+```
+
+De nuevo, a partir de la aplicacion de la transformacion Yeo-Johnson, la variable de **Distancia** parece comportarse como una normal. Esto respaldado por el sesgo bajo (aunque es existente hacia la izquierda), la forma casi mesocurtica, la cercania de la mediana y la media, la ausencia de rechazos de la $H_0$ de parte de todas las pruebas de normalidad hechas, la poca diferencia entre la distribucion teorica y la empirica y la consistencia de los puntos sobre la recta en el QQPlot.
+
+### 8. Conclusión sobre las transformaciones realizadas
+
+Comparación de los tres modelos obtenidos para la distancia:
+
+```{r}
+comparacion_final = data.frame(
+  Modelo = c("Box-Cox exacta", "Box-Cox aproximada", "Yeo-Johnson"),
+  Lambda = c(round(lambda, 3), 0.5, round(lambda_yj, 3)),
+  Shapiro = c(shapiro.test(distancia_exacta)$p.value,
+              shapiro.test(distancia_aprox)$p.value,
+              shapiro.test(distancia_yj)$p.value),
+  Anderson_Darling = c(ad.test(distancia_exacta)$p.value,
+                       ad.test(distancia_aprox)$p.value,
+                       ad.test(distancia_yj)$p.value),
+  Lilliefors = c(lillie.test(distancia_exacta)$p.value,
+                 lillie.test(distancia_aprox)$p.value,
+                 lillie.test(distancia_yj)$p.value),
+  Sesgo = c(skewness(distancia_exacta), skewness(distancia_aprox), skewness(distancia_yj)),
+  Curtosis = c(kurtosis(distancia_exacta), kurtosis(distancia_aprox), kurtosis(distancia_yj))
+)
+comparacion_final
+```
+
+Despues de haber hecho todas las pruebas y el analisis de todas las metricas y graficas, opino que todas las prubas tienen un desempeño bastante bueno. En las pruebas de normalidad el p-valor mas bajo fue de 0.8144, los sesgos son practicamene inexistentes y la curtosis en todos indica que tienen una forma cercana a mesocurtica. Es por esgo que considero que las tres son buenas, pero si tuviese que escoger una me iria con Box-Cox aproximada. Ya que no hay ningun indicador de mejora en el ambito estadistico entre los metodos usados, lo que considero otra metrica para elegir el metodo ganador es la simplicidad. Box-Cox tiene razon en redondear y en que no es necesario usar la version exacta si nuestro redondeo estra dentro del intervalo de confianza, y en este caso si lo esta. De esta manera termina siendo mas simple interpretar y hacer la transformacion. Y descarto la transformacion de Yeo-Johnson porque es buena para cuando tenemos cifras negativas, pero usando este dataset en particular ambas variables que buscabamos transformar no cuentan con valores de este tipo por que no es posible. Por esto considero que es buen ejercicio para ver como se comporta pero esta de mas.
+
+### 9. Regresión lineal simple con la mejor transformación
+
+#### 9.1 Modelo lineal para la transformación en función de la velocidad
+
+```{r}
+modelo = lm(sqrt(distancia) ~ velocidad)
+summary(modelo)
+```
+
+$$\sqrt{\text{distancia}} = \beta_0 + \beta_1 \cdot \text{velocidad}$$
+
+$$\widehat{\sqrt{\text{distancia}}} = 1.27705 + 0.32241 \cdot \text{velocidad}$$
+
+#### 9.2 Gráfica de los datos y el modelo
+
+```{r}
+plot(velocidad, sqrt(distancia), pch = 19,
+     main = "sqrt(distancia) vs velocidad",
+     xlab = "velocidad", ylab = "sqrt(distancia)")
+abline(modelo, col = "red", lwd = 2)
+```
+
+En esta grafica podemos ver la primera prueba de que la transformacion sirvio ya que la dispersion de los puntos alrededor de la recta es constante o pareja. No se abre ni se cierra como con los datos originales.
+
+#### 9.3 Significancia del modelo
+
+```{r}
+summary(modelo)$coefficients
+```
+
+```{r}
+cor(velocidad, sqrt(distancia))
+summary(modelo)$r.squared
+```
+
+Dentro de la tabla anova podemos ver que la prueba F da un valor de 117.18 y un p-value de $1.77 \times 10^{-14}$, muchísimo menor a 0.05, lo que hace que rechazemos la $H_0$ que nos indica la anova de que la pendiente es cero. Asi sabemos que la velocidad si explica la raiz.
+
+Despues la correlación de ambas variables es de 0.8423 y el coeficiente de determinación es $R^2 = 0.7094$. Lo cual es bueno porque siginifica que la velocidad explica aproximadamente el 70% de la variabilidad de la raiz de la distancia. El resto corresponde a otras variables que pueden estar dentro de la base de datos o no.
+
+#### 9.4 Validez del modelo
+
+**Normalidad de los residuos:**
+
+```{r}
+residuos = residuals(modelo)
+ad.test(residuos)
+lillie.test(residuos)
+```
+
+```{r}
+qqnorm(residuos, main = "QQ-Plot de los residuos")
+qqline(residuos, col = "red")
+```
+
+```{r}
+hist(residuos, freq = FALSE, main = "Histograma de los residuos", xlab = "residuos")
+curve(dnorm(x, mean(residuos), sd(residuos)), add = TRUE, col = "blue", lwd = 2)
+```
+
+Ninguna de las tres pruebas rechaza la normalidad de los residuos. Anderson-Darling 0.3551 y Lilliefors 0.4368, sobrepasando el 0.05 facilmente. El QQPlot lo complementa mostrando que los puntos se mantienen pegados a la recta y el histograma sigue la curva teorica.
+
+**Homocedasticidad:**
+
+```{r}
+plot(fitted(modelo), residuos, pch = 19,
+     main = "Residuos vs valores ajustados",
+     xlab = "valores ajustados", ylab = "residuos")
+abline(h = 0, col = "red", lty = 2)
+```
+
+Nuestro gradico muestra que los residuos no siguen ningun tipo de patron.
+
+**Independencia:**
+
+```{r}
+plot(residuos, type = "b", pch = 19,
+     main = "Residuos en el orden de los datos",
+     xlab = "observación", ylab = "residuos")
+abline(h = 0, col = "red", lty = 2)
+```
+
+Al poner los residuos en orden tambien podemos ver que no hay ningun patron lo que significa que son independientes uno de otro.
+
+**Datos atípicos e influyentes:**
+
+Dentro de los datos atipicos infuyentes solo existe uno que es el que podiamos ver en la sexion 6, en los BoxPlots, el cual solo era un valor.
+
+Ya despues de haber concluido todas las pruebas podemos decir que el modelo es valido ya que cumple con todo lo establecido.
+
+#### 9.5 Despeje de la distancia
+
+Partiendo del modelo lineal y elevando al cuadrado ambos lados:
+
+$$\sqrt{\text{distancia}} = 1.27705 + 0.32241 \cdot \text{velocidad}$$
+
+$$\boxed{\ \text{distancia} = \left(1.27705 + 0.32241 \cdot \text{velocidad}\right)^2\ }$$
+
+Que desarrollado queda:
+
+$$\text{distancia} = 1.6309 + 0.8234 \cdot \text{velocidad} + 0.1039 \cdot \text{velocidad}^2$$
+
+#### 9.6 Gráfica del modelo de la distancia en función de la velocidad
+
+```{r}
+plot(velocidad, distancia, pch = 19,
+     main = "Modelo no lineal vs regresión lineal directa",
+     xlab = "velocidad", ylab = "distancia")
+curve((1.27705 + 0.32241*x)^2, from = min(velocidad), to = max(velocidad),
+      add = TRUE, col = "red", lwd = 2)
+abline(lm(distancia ~ velocidad), col = "blue", lwd = 2, lty = 2)
+legend("topleft", legend = c("datos", "modelo transformado", "lineal directo"),
+       pch = c(19, NA, NA), lty = c(NA, 1, 2), col = c("black", "red", "blue"), bty = "n")
+```
+
+### Declaratoria de uso de IA durante el desarrollo del trabajo
+
+**Opción B. Se utilizó IA.**
+
+1.  **Herramienta:** Claude Code con modelo Claude Opus 5, utilizada desde la terminal.
+
+2.  **Uso realizado:** Nuevamente Claude Code se usó para la generación de códigos en R, en especial la creacion de funciones y graficos al igual que con las instalaciones de dependencias. Tambien se uso para la organizacion de encabezados y estructura del documento.
+
+3.  **Secciones donde se utilizó:** principalmente se usó en la sección 5.3 y 5.4 para la generación de gráficas y de esas gráficas usé el template para hacer el resto, sobre todo en las distribuciones. Los Qt Plots venían como codificarlos en la presentación. También se usó en la sección 7 para afinar el código y en las secciones 9.1, 9.2, 9.3 y 9.4 para poder hacer la regresión lineal en R, que nunca la había hecho.
+
+4.  **Validación realizada:** por mi parte también complementé la generación de IA leyendo la documentación oficial de R y ejecuté el documento completo, asegurándome de que todos los bloques de código dieran resultados correctos y coherentes.
+
+5.  **Confirmación:** En este apartado confirmo que se revisó, se verificó y que asumo la responsabilidad del contenido final entregado.
+
+6.  **Otro:** todas las interpretaciones, conclusiones y descripciones de los gráficos fueron redactadas 100% con mi criterio propio y tomando en cuenta el resultado de todas las celdas de código.
