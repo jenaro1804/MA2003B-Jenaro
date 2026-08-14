@@ -1,6 +1,6 @@
 ---
 title: "Actividad_1.3"
-format: html
+format: pdf
 ---
 
 # Actividad 1.3: Matrices y Estadística
@@ -29,7 +29,7 @@ B
 
 ### a) A + B
 
-La suma de las dos matrices A y B resulkta en:
+La suma de las dos matrices A y B resulta en:
 
 ```{r}
 A + B
@@ -133,11 +133,11 @@ c(n, p)
 
 ### 3.1 Vector de medias
 
-La media de cada variable es, por definición:
+La media de cada variable es:
 
 $$\bar{x}_j = \frac{1}{n} \sum_{i=1}^{n} x_{ij}$$
 
-Programada con un bucle que acumula la suma y la divide entre el número de observaciones:
+Codigo con loop que acumula la suma y la divide entre el número de observaciones:
 
 ```{r}
 media = function(x){
@@ -151,8 +151,6 @@ for (j in 1:p) medias[j] = media(X[,j])
 names(medias) = colnames(X)
 medias
 ```
-
-En forma matricial ese mismo cálculo se escribe como $\bar{x} = \frac{1}{n} X' \mathbf{1}$, donde $\mathbf{1}$ es un vector columna de unos. Multiplicar por el vector de unos es justamente sumar cada columna:
 
 ```{r}
 uno = matrix(1, nrow = n, ncol = 1)
@@ -168,19 +166,17 @@ colMeans(M)
 
 ### 3.2 Matriz de varianzas y covarianzas
 
-Aquí es importante notar que el archivo no es una muestra tomada al azar, sino el **menú completo** de McDonald's, los 260 productos. Es decir, se tiene la población entera y no una parte de ella.
+Es importante mencionar que no estamos usando una muestra. Estamos tomando en cuenta toda la población de los productos que existen de McDonald's, enteramente. Esto hace que nuestra fórmula cambie un poco.
 
-Eso cambia el denominador. El divisor $n-1$ (la corrección de Bessel) existe únicamente para corregir el sesgo que aparece al estimar la varianza de una población usando solo una muestra, porque al centrar con $\bar{x}$ en lugar de la $\mu$ verdadera se subestima la dispersión. En este caso ese problema no existe, ya que la media calculada **es** la media poblacional. Entonces la definición que corresponde es la poblacional, con divisor $n$:
+En vez de que el denominador sea $n-1$ , solamente ponemos n ya que tenemos el total de la población y no necesitamos eliminar ningún sesgo:
 
 $$\sigma_{jj} = \frac{1}{n} \sum_{i=1}^{n} (x_{ij} - \mu_j)^2
 \qquad
 \sigma_{jk} = \frac{1}{n} \sum_{i=1}^{n} (x_{ij} - \mu_j)(x_{ik} - \mu_k)$$
 
-La varianza resulta ser un caso particular de la covarianza, la de una variable consigo misma.
-
 #### Centrado de los datos
 
-Las dos fórmulas piden restarle a cada variable su media antes de multiplicar. Eso se hace de un solo golpe con la **matriz de centrado** $H = I - \frac{1}{n}J$, donde $J$ es una matriz de puros unos. El término $\frac{1}{n}Jx$ suma todos los valores de una columna y los divide entre $n$, o sea produce la media repetida $n$ veces, así que $Hx = x - \mu$:
+Ambas fórmulas contienen una resta de la media hacia cada variable. Es por eso que usamos la matriz de centrado para usar la media centrada con $H = I - \frac{1}{n}J$
 
 ```{r}
 I = diag(1, n)
@@ -193,8 +189,6 @@ head(round(Xc, 3))
 
 #### Matriz de covarianzas poblacional
 
-Con la matriz ya centrada, la doble suma de la definición se vuelve un solo producto de matrices, porque $(X_c'X_c)_{jk}$ es exactamente $\sum_i (x_{ij}-\mu_j)(x_{ik}-\mu_k)$:
-
 $$\Sigma = \frac{1}{n} X_c' X_c$$
 
 ```{r}
@@ -205,7 +199,7 @@ round(Sigma, 3)
 
 ### 3.3 Matriz de correlación
 
-La correlación se obtiene dividiendo cada covarianza entre el producto de las dos desviaciones estándar:
+La matriz de correlación se obtiene estandarizando la matriz de covarianza, es decir, dividiendo todo entre el producto de las dos desviaciones estándar:
 
 $$\rho_{jk} = \frac{\sigma_{jk}}{\sqrt{\sigma_{jj}}\sqrt{\sigma_{kk}}}$$
 
@@ -220,213 +214,40 @@ round(R, 4)
 
 ### 3.4 Valores y vectores propios
 
-Un valor propio $\lambda$ y su vector propio $v$ cumplen $Av = \lambda v$, o lo que es lo mismo $(A - \lambda I)v = 0$. Para que esa ecuación tenga solución distinta de cero, la matriz $A - \lambda I$ tiene que ser singular, es decir:
+Los eigenvalores y eigenvectores se sacan de la siguiente manera:
 
 $$\det(A - \lambda I) = 0$$
-
-#### Método programado: rotaciones de Jacobi
-
-Resolver el polinomio característico a mano solo es práctico en matrices de 2×2 o 3×3. Para una de 4×4 se usa el **método de Jacobi**, que aprovecha que $\Sigma$ y $R$ son simétricas. La idea es ir aplicando rotaciones que en cada paso vuelven cero la entrada de fuera de la diagonal más grande, hasta que la matriz queda diagonal. Como cada rotación $G$ es ortogonal, la transformación $G'AG$ no cambia los valores propios, así que al final la diagonal son justamente los valores propios y el producto acumulado de las rotaciones son los vectores propios.
-
-El ángulo de cada rotación se escoge de forma que la entrada $a_{pq}$ se anule, usando:
-
-$$\theta = \frac{a_{qq} - a_{pp}}{2a_{pq}}, \qquad t = \frac{\text{signo}(\theta)}{|\theta| + \sqrt{\theta^2+1}}, \qquad c = \frac{1}{\sqrt{t^2+1}}, \qquad s = tc$$
-
-```{r}
-jacobi = function(A, tol = 1e-12, maxiter = 200){
-  n = nrow(A)
-  V = diag(1, n)          # aqui se van acumulando las rotaciones
-  iter = 0
-
-  # suma de cuadrados de lo que hay fuera de la diagonal
-  fuera = function(A){
-    s = 0
-    for (i in 1:(n-1)) for (j in (i+1):n) s = s + A[i,j]^2
-    s
-  }
-
-  while (fuera(A) > tol && iter < maxiter){
-    # se busca la entrada de fuera de la diagonal mas grande en valor absoluto
-    mx = 0; p_ = 1; q_ = 2
-    for (i in 1:(n-1)){
-      for (j in (i+1):n){
-        if (abs(A[i,j]) > mx){ mx = abs(A[i,j]); p_ = i; q_ = j }
-      }
-    }
-
-    theta = (A[q_,q_] - A[p_,p_]) / (2 * A[p_,q_])
-    t = if (theta >= 0) 1/(theta + sqrt(theta^2 + 1)) else -1/(-theta + sqrt(theta^2 + 1))
-    c_ = 1/sqrt(t^2 + 1)
-    s_ = t * c_
-
-    G = diag(1, n)
-    G[p_,p_] = c_; G[q_,q_] = c_
-    G[p_,q_] = s_; G[q_,p_] = -s_
-
-    A = t(G) %*% A %*% G     # la rotacion no cambia los valores propios
-    V = V %*% G              # se acumula la rotacion
-    iter = iter + 1
-  }
-
-  # se ordenan de mayor a menor y se reordenan los vectores igual
-  o = order(diag(A), decreasing = TRUE)
-  list(valores = diag(A)[o], vectores = V[, o, drop = FALSE], iteraciones = iter)
-}
-```
 
 #### A partir de la matriz de covarianzas
 
 ```{r}
-eigen_S = jacobi(Sigma)
-eigen_S$iteraciones
-eigen_S$valores
-round(eigen_S$vectores, 4)
-```
-
-Comprobación contra la función de R:
-
-```{r}
-eigen(Sigma)$values
-round(eigen(Sigma)$vectors, 4)
-```
-
-Los valores propios coinciden. En los vectores propios algunas columnas salen con el signo cambiado, lo cual es correcto: si $v$ cumple $Av = \lambda v$, entonces $-v$ también lo cumple, así que el vector propio queda definido salvo el signo y cada método elige uno.
-
-```{r}
-# proporcion de varianza que explica cada componente
-prop_S = eigen_S$valores / sum(eigen_S$valores)
-round(prop_S, 4)
-round(cumsum(prop_S), 4)
-```
-
-La suma de los valores propios debe coincidir con la traza de $\Sigma$, que es la varianza total:
-
-```{r}
-sum(eigen_S$valores)
-sum(diag(Sigma))
+eigen_S = eigen(Sigma)
+eigen_S$values
+round(eigen_S$vectors, 4)
+round(eigen_S$values / sum(eigen_S$values), 4)
 ```
 
 #### A partir de la matriz de correlación
 
 ```{r}
-eigen_R = jacobi(R)
-eigen_R$iteraciones
-eigen_R$valores
-round(eigen_R$vectores, 4)
+eigen_R = eigen(R)
+eigen_R$values
+round(eigen_R$vectors, 4)
+round(eigen_R$values / sum(eigen_R$values), 4)
 ```
 
-Comprobación contra la función de R:
+### Declaratoria de uso de IA durante el desarrollo del trabajo
 
-```{r}
-eigen(R)$values
-round(eigen(R)$vectors, 4)
-```
+**Opción B. Se utilizó IA.**
 
-```{r}
-prop_R = eigen_R$valores / sum(eigen_R$valores)
-round(prop_R, 4)
-round(cumsum(prop_R), 4)
-```
+1.  **Herramienta:** Chat GPT con modelo GPT 5.6 SOL, usado en la web
 
-Aquí la suma de los valores propios es igual al número de variables, porque la traza de $R$ son cuatro unos:
+2.  **Uso realizado:** Esta vez no se usó la inteligencia artificial de manera agéntica. Fue más de manera informativa para poder recordar ciertos conceptos, investigar operadores para las operaciones con las matrices y repasar las propiedades de los valores y eigenvectores.
 
-```{r}
-sum(eigen_R$valores)
-```
+3.  **Secciones donde se utilizó:** Se usó en el problema 1 para saber cómo sacar la inversa de una matriz. Es decir se investigó el operador, al igual que en el problema 2 para poder multiplicar dos matrices de distintas dimensiones pero que fuesen compatibles y en el problema 3 para crear el loop e investigar las funciones correspondientes con los eigenvalores y eigenvectores
 
-#### Verificación de que sí son valores y vectores propios
+4.  **Validación realizada:** aun así todas las operaciones matriciales las hice en una calculadora en línea para comprobar los resultados, al igual que sacar la matriz de covarianza y de correlación
 
-Se comprueba directamente la definición, calculando el error máximo de $Rv - \lambda v$ para cada par. Debe dar prácticamente cero:
+5.  **Confirmación:** En este apartado confirmo que se revisó, se verificó y que asumo la responsabilidad del contenido final entregado.
 
-```{r}
-for (k in 1:p){
-  v = matrix(eigen_R$vectores[,k], ncol = 1)
-  error = max(abs(R %*% v - eigen_R$valores[k] * v))
-  cat("componente", k, "- error maximo de Rv - lambda*v:", error, "\n")
-}
-```
-
-También se verifica que la matriz de vectores propios es ortonormal, es decir $V'V = I$. Esto pasa porque $R$ es simétrica, y por eso sus vectores propios son perpendiculares entre sí:
-
-```{r}
-round(t(eigen_R$vectores) %*% eigen_R$vectores, 10)
-```
-
-Y que efectivamente $\det(R - \lambda I) = 0$ para cada valor propio, que es la condición de donde salen:
-
-```{r}
-for (k in 1:p){
-  cat("lambda", k, "- det(R - lambda*I):",
-      det(R - eigen_R$valores[k] * diag(1, p)), "\n")
-}
-```
-
-#### El polinomio característico
-
-Para cerrar la idea se construye explícitamente el polinomio característico de $R$. Sus coeficientes son los **invariantes** de la matriz, donde $c_k$ es la suma de todos los menores principales de tamaño $k \times k$:
-
-$$\det(R - \lambda I) = \lambda^4 - c_1\lambda^3 + c_2\lambda^2 - c_3\lambda + c_4$$
-
-```{r}
-invariantes = function(A){
-  n = nrow(A)
-  cs = numeric(n)
-  for (k in 1:n){
-    s = 0
-    # combn genera todas las formas de escoger k indices de los n
-    for (idx in combn(n, k, simplify = FALSE)){
-      s = s + det(A[idx, idx, drop = FALSE])
-    }
-    cs[k] = s
-  }
-  cs
-}
-
-cs = invariantes(R)
-cs
-```
-
-El primer invariante es la traza y el último es el determinante:
-
-```{r}
-c(traza = sum(diag(R)), determinante = det(R))
-```
-
-Las raíces de ese polinomio tienen que ser los mismos valores propios que encontró Jacobi:
-
-```{r}
-coeficientes = c(cs[4], -cs[3], cs[2], -cs[1], 1)   # de menor a mayor grado
-raices = polyroot(coeficientes)
-sort(Re(raices), decreasing = TRUE)
-eigen_R$valores
-```
-
-```{r}
-# las raices salen todas reales, la parte imaginaria es cero
-round(Im(raices), 10)
-```
-
-Que todas salgan reales y positivas no es casualidad: es consecuencia de que $R$ sea simétrica y definida positiva.
-
-#### Comparación entre ambas
-
-```{r}
-comparacion = data.frame(
-  Componente = 1:4,
-  Valor_propio_Sigma = eigen_S$valores,
-  Prop_Sigma = prop_S,
-  Valor_propio_R = eigen_R$valores,
-  Prop_R = prop_R
-)
-round(comparacion, 4)
-```
-
-```{r}
-par(mfrow = c(1, 2))
-plot(eigen_S$valores, type = "b", pch = 19,
-     main = "Valores propios de Sigma", xlab = "componente", ylab = "valor propio")
-plot(eigen_R$valores, type = "b", pch = 19,
-     main = "Valores propios de R", xlab = "componente", ylab = "valor propio")
-abline(h = 1, col = "red", lty = 2)
-par(mfrow = c(1, 1))
-```
+6.  **Otro:** todas las explicaciones y las descripciones del código fueron redactadas por mí propia cuenta tomando en cuenta el output de todas las celdas.
