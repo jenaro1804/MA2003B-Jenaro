@@ -1,0 +1,182 @@
+---
+title: "Actividad_2.1"
+format: html
+---
+
+# Actividad 2.1: Regresión lineal por mínimos cuadrados
+
+Tengo los dos vectores:
+
+$$x = \begin{bmatrix} 2.86 \\ 7.29 \\ 2.05 \\ 9.05 \\ 8.61 \\ 5.67 \end{bmatrix}
+\qquad
+y = \begin{bmatrix} 3.88 \\ 7.47 \\ 2.83 \\ 8.88 \\ 7.43 \\ 4.33 \end{bmatrix}$$
+
+Queremos encontrar la recta $\hat{y} = \beta_0 + \beta_1 x + \epsilon$
+
+$$\text{SSE} = \sum_{i=1}^{n} (y_i - \beta_0 - \beta_1 x_i)^2$$
+
+### Los datos
+
+```{r}
+#| message: false
+library(tidyverse)
+
+x <- c(2.86, 7.29, 2.05, 9.05, 8.61, 5.67)
+y <- c(3.88, 7.47, 2.83, 8.88, 7.43, 4.33)
+
+datos <- tibble(x = x, y = y)
+datos
+```
+
+### Tabla de sumas
+
+Las sumas
+
+```{r}
+tabla <- datos %>%
+  mutate(x2 = x^2, y2 = y^2, xy = x * y)
+
+colSums(tabla)
+```
+
+### Matriz de diseño
+
+$$\hat{\beta} = (\Phi^{T}\Phi)^{-1}\Phi^{T}y$$
+
+$$\Phi = \begin{bmatrix}
+1 & 2.86 \\
+1 & 7.29 \\
+1 & 2.05 \\
+1 & 9.05 \\
+1 & 8.61 \\
+1 & 5.67
+\end{bmatrix}$$
+
+```{r}
+Phi <- cbind(1, x)
+Phi
+```
+
+### Cálculo de $\Phi^{T}\Phi$ y de su inversa
+
+```{r}
+PtP <- t(Phi) %*% Phi
+PtP
+```
+
+```{r}
+det(PtP)
+PtP_inv <- solve(PtP)
+PtP_inv
+```
+
+$$(\Phi^{T}\Phi)^{-1})  = \begin{bmatrix}
+0.9763 & -0.1367 \\
+-0.1367 & 0.0231
+\end{bmatrix}$$
+
+### Cálculo de $\Phi^{T}y$
+
+```{r}
+Pty <- t(Phi) %*% y
+Pty
+```
+
+$$\Phi^{T}y = \begin{bmatrix}
+\sum y_i \\
+\sum x_i y_i
+\end{bmatrix} = \begin{bmatrix}
+34.82 \\
+240.242
+\end{bmatrix}$$
+
+### Coeficientes
+
+Ya nada más se multiplican las dos piezas anteriores:
+
+```{r}
+beta_hat <- PtP_inv %*% Pty
+beta_hat
+
+b0 <- beta_hat[1]
+b1 <- beta_hat[2]
+c(b0 = b0, b1 = b1)
+```
+
+$$\hat{\beta} = \begin{bmatrix}1.1481 \\0.7861 \end{bmatrix}$$
+
+Es decir $\beta_0 = 1.1481$ y $\beta_1 = 0.7861$
+
+La recta ajustada queda como:
+
+$$\hat{y} = 1.1481 + 0.7861\,x$$
+
+## Problema 2. Datos de 2_sample_data.csv
+
+### Importación
+
+```{r}
+#| message: false
+datos2 <- read_csv("2_sample_data.csv")
+
+head(datos2)
+```
+
+### Mínimos cuadrados
+
+```{r}
+x2 <- datos2$x
+y2 <- datos2$y
+
+Phi2 <- cbind(1, x2)
+PtP2 <- t(Phi2) %*% Phi2
+Pty2 <- t(Phi2) %*% y2
+
+PtP2
+Pty2
+solve(PtP2)
+```
+
+$$\Phi^{T}\Phi = \begin{bmatrix}
+1000 & 5075.97 \\
+5075.97 & 34137.83
+\end{bmatrix}
+\qquad
+\Phi^{T}y = \begin{bmatrix}
+5107.629 \\
+34142.582
+\end{bmatrix}$$
+
+```{r}
+beta_hat2 <- solve(PtP2) %*% Pty2
+beta_hat2
+
+c0 <- beta_hat2[1]
+c1 <- beta_hat2[2]
+```
+
+$$\hat{\beta} = (\Phi^{T}\Phi)^{-1}\Phi^{T}y = \begin{bmatrix} 0.1262 \\ 0.9814 \end{bmatrix}$$
+
+$$\hat{y} = 0.1262 + 0.9814\,x$$
+
+### Gráfica del ajuste
+
+```{r}
+#| fig-cap: "Recta ajustada por mínimos cuadrados (n = 1000)"
+#| fig-width: 8
+#| fig-height: 5
+#| message: false
+
+datos2 %>%
+  ggplot(aes(x = x, y = y)) +
+  geom_point(color = "#B31B1B", size = 1, alpha = 0.4) +
+  geom_abline(intercept = c0, slope = c1,
+              color = "#3B3BBB", linewidth = 1) +
+  labs(
+    title = "Ajuste por mínimos cuadrados",
+    subtitle = "y = 0.1262 + 0.9814 x",
+    x = "x",
+    y = "y"
+  ) +
+  theme_minimal()
+```
