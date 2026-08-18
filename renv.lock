@@ -138,7 +138,8 @@
       "Description": "Provides color schemes for maps (and other graphics) designed by Cynthia Brewer as described at http://colorbrewer2.org.",
       "License": "Apache License 2.0",
       "NeedsCompilation": "no",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "Rcpp": {
       "Package": "Rcpp",
@@ -342,7 +343,8 @@
       "URL": "https://www.rforge.net/base64enc",
       "BugReports": "https://github.com/s-u/base64enc/issues",
       "NeedsCompilation": "yes",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "bit": {
       "Package": "bit",
@@ -725,7 +727,8 @@
       "NeedsCompilation": "no",
       "Author": "Jennifer Bryan [cre, aut], Hadley Wickham [ctb]",
       "Maintainer": "Jennifer Bryan <jenny@stat.ubc.ca>",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "class": {
       "Package": "class",
@@ -1285,7 +1288,8 @@
       "NeedsCompilation": "yes",
       "Author": "David Meyer [aut, cre] (ORCID: <https://orcid.org/0000-0002-5196-3048>), Evgenia Dimitriadou [aut, cph], Kurt Hornik [aut] (ORCID: <https://orcid.org/0000-0003-4198-9911>), Andreas Weingessel [aut], Friedrich Leisch [aut], Chih-Chung Chang [ctb, cph] (libsvm C++-code), Chih-Chen Lin [ctb, cph] (libsvm C++-code)",
       "Maintainer": "David Meyer <David.Meyer@R-project.org>",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "evaluate": {
       "Package": "evaluate",
@@ -2078,7 +2082,8 @@
       "NeedsCompilation": "no",
       "Author": "Rich FitzJohn [aut, cre]",
       "Maintainer": "Rich FitzJohn <rich.fitzjohn@gmail.com>",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "isoband": {
       "Package": "isoband",
@@ -2305,7 +2310,8 @@
         "stats",
         "graphics"
       ],
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "latex2exp": {
       "Package": "latex2exp",
@@ -2550,6 +2556,35 @@
       "Maintainer": "Yihui Xie <xie@yihui.name>",
       "Repository": "CRAN"
     },
+    "misc3d": {
+      "Package": "misc3d",
+      "Version": "0.9-2",
+      "Source": "Repository",
+      "Title": "Miscellaneous 3D Plots",
+      "Authors@R": "c(person(\"Luke\", \"Tierney\", role = c(\"aut\", \"cre\"), email = \"luke-tierney@uiowa.edu\"), person(\"Dai\", \"Feng\", role=\"aut\"))",
+      "Suggests": [
+        "rgl",
+        "tkrplot",
+        "MASS",
+        "maps",
+        "lattice",
+        "scatterplot3d"
+      ],
+      "Imports": [
+        "grDevices",
+        "graphics",
+        "stats",
+        "tcltk"
+      ],
+      "Description": "A collection of miscellaneous 3d plots, including isosurfaces.",
+      "URL": "https://gitlab.com/luke-tierney/misc3d",
+      "License": "GPL",
+      "NeedsCompilation": "no",
+      "Author": "Luke Tierney [aut, cre], Dai Feng [aut]",
+      "Maintainer": "Luke Tierney <luke-tierney@uiowa.edu>",
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
+    },
     "modelr": {
       "Package": "modelr",
       "Version": "0.1.11",
@@ -2602,7 +2637,8 @@
       "License": "GPL (>= 2)",
       "URL": "https://www.r-project.org, http://www.komsta.net/",
       "NeedsCompilation": "no",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "nortest": {
       "Package": "nortest",
@@ -2619,7 +2655,8 @@
       "Author": "Juergen Gross [aut], Uwe Ligges [aut, cre]",
       "Maintainer": "Uwe Ligges <ligges@statistik.tu-dortmund.de>",
       "NeedsCompilation": "no",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "openssl": {
       "Package": "openssl",
@@ -2815,6 +2852,31 @@
       "NeedsCompilation": "no",
       "Repository": "CRAN"
     },
+    "plot3D": {
+      "Package": "plot3D",
+      "Version": "1.4.2",
+      "Source": "Repository",
+      "Title": "Plotting Multi-Dimensional Data",
+      "Authors@R": "person(given = \"Karline\", family = \"Soetaert\", role = c(\"aut\", \"cre\"), email = \"karline.soetaert@nioz.nl\", comment = c(ORCID = \"0000-0003-4603-7100\"))",
+      "Depends": [
+        "R (>= 2.15)"
+      ],
+      "Imports": [
+        "misc3d",
+        "stats",
+        "graphics",
+        "grDevices",
+        "methods"
+      ],
+      "Description": "Functions for viewing 2-D and 3-D data, including perspective plots, slice plots, surface plots, scatter plots, etc. Includes data sets from oceanography.",
+      "License": "GPL (>= 3.0)",
+      "LazyData": "yes",
+      "NeedsCompilation": "no",
+      "Author": "Karline Soetaert [aut, cre] (ORCID: <https://orcid.org/0000-0003-4603-7100>)",
+      "Maintainer": "Karline Soetaert <karline.soetaert@nioz.nl>",
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
+    },
     "prettyunits": {
       "Package": "prettyunits",
       "Version": "1.2.0",
@@ -2937,7 +2999,8 @@
       "NeedsCompilation": "yes",
       "Author": "David Meyer [aut, cre] (ORCID: <https://orcid.org/0000-0002-5196-3048>), Christian Buchta [aut]",
       "Maintainer": "David Meyer <David.Meyer@R-project.org>",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "ps": {
       "Package": "ps",
@@ -4350,7 +4413,8 @@
       "URL": "https://www.rforge.net/uuid",
       "BugReports": "https://github.com/s-u/uuid/issues",
       "NeedsCompilation": "yes",
-      "Repository": "CRAN"
+      "Repository": "CRAN",
+      "Encoding": "UTF-8"
     },
     "vctrs": {
       "Package": "vctrs",
