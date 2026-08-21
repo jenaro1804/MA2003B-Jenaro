@@ -1,0 +1,200 @@
+---
+title: "Actividad_1.5"
+format: pdf
+---
+
+# Actividad 1.5: Distribución normal multivariada
+
+## Problema 1. Cálculo de una probabilidad acumulada
+
+Se busca la probabilidad conjunta:
+
+$$P(X_1 \leq 3,\; X_2 \leq 2)$$
+
+donde el vector $(X_1, X_2)$ sigue una distribución normal bivariada con vector de medias y matriz de varianzas-covarianzas:
+
+$$\mu = \begin{pmatrix} 2.5 \\ 4 \end{pmatrix}
+\qquad
+\Sigma = \begin{pmatrix} 1.2 & 0 \\ 0 & 2.3 \end{pmatrix}$$
+
+```{r}
+library(mnormt)
+
+x = c(3, 2)
+miu = c(2.5, 4)
+sigma = matrix(c(1.2, 0,
+                 0, 2.3), nrow = 2, byrow = TRUE)
+
+miu
+sigma
+```
+
+Con esos datos la probabilidad es:
+
+```{r}
+pmnorm(x, miu, sigma)
+```
+
+### Comprobación
+
+Ya que las variables son independientes, podemos obtener sus probabilidades por separado y después multiplicarlas para ver si obtenemos el mismo resultado que nos arrojó la prueba de anterior:
+
+$$P(X_1 \leq 3, X_2 \leq 2) = P(X_1 \leq 3) \cdot P(X_2 \leq 2)$$
+
+```{r}
+p1 = pnorm(3, mean = 2.5, sd = sqrt(1.2))
+p2 = pnorm(2, mean = 4, sd = sqrt(2.3))
+c(p1, p2)
+p1 * p2
+```
+
+Como era de esperarse, obtuvimos el mismo resultado de 0.06328658.
+
+## Problema 2. Gráfico de la distribución bivariada
+
+Ahora se grafica la superficie de densidad de esa misma distribución. Para que el gráfico quede visualmente interpretable tenemos que centrar los valores de x1 y x2 alrededor de su media. Las desviaciones estándar son la raíz de los elementos de la diagonal de $\Sigma$, ya que estos son la varianza
+
+$$\sigma_1 = \sqrt{1.2} = 1.0954 \qquad \sigma_2 = \sqrt{2.3} = 1.5166$$
+
+```{r}
+s1 = sqrt(sigma[1,1])
+s2 = sqrt(sigma[2,2])
+c(s1, s2)
+
+x1 = seq(miu[1] - 3*s1, miu[1] + 3*s1, 0.1)
+x2 = seq(miu[2] - 3*s2, miu[2] + 3*s2, 0.1)
+
+range(x1)
+range(x2)
+```
+
+Con esos rangos se evalúa la densidad en cada combinación de puntos. La función que se usa es `dmnorm()` (la densidad multivariada), y `outer()` arma la matriz `z`
+
+```{r}
+f = function(x1, x2) dmnorm(cbind(x1, x2), miu, sigma)
+z = outer(x1, x2, f)
+dim(z)
+max(z)
+```
+
+```{r}
+persp(x1, x2, z, theta = -30, phi = 25, expand = 0.6,
+      ticktype = 'detailed', col = "pink",
+      xlab = "X1", ylab = "X2", zlab = "densidad")
+```
+
+## Problema 3. Contornos de la distribución
+
+### Pregunta previa
+
+Antes de graficar hay que contestar: ¿a qué altura (0.01, 0.03, 0.05, 0.07, 0.09, 0.1) está el contorno con el diámetro más pequeño y a cuál el más grande?
+
+Creo que al 0.01 sera el mas grande y el 0.09 el mas pequeño.
+
+### Gráfico de contornos
+
+Se reutilizan la misma malla `x1`, `x2` y la matriz de alturas `z` del problema 2.
+
+```{r}
+contour(x1, x2, z, col = "blue",
+        levels = c(0.01, 0.03, 0.05, 0.07, 0.09),
+        xlab = "X1", ylab = "X2",
+        main = "Contornos de la normal bivariada")
+```
+
+El primer problema y el segundo problema se relacionan de la siguiente manera. En el primer problema obtenemos la cifra de 0.06328658, qué es la probabilidad de que$P(X_1 \leq 3)$ y $P(X_2 \leq 2)$. Si nosotros después vemos la gráfica en el problema 2 y trazamos las líneas verticales a lo largo de los límites que establecen el primer problema para ambas variables, e imaginamos que cortamos la gráfica, nos quedamos como con una especie de rebanada de pastel cuadrada que resulta tener una esquina un poco elevada y esa rebanada de pastel (o ese volumen) es lo que representa ese 0.06328658. Esa rebanada de pastel es el 6.3% de todo el volumen bajo la malla.
+
+En el segundo problema podemos ver la distribución en un plano 3D y dentro del tercer problema podemos ver en 2D los contornos que se encuentran en cierto nivel de la zeta que veíamos en la distribución del problema tres. Esto nos ayuda a ver en qué intersección de nuestra variable $X_1$ y $X_2$ se centran los datos de la distribución con base al nivel de $Z$. De esta manera es más fácil apreciar dónde se concenctran. En cuanto a la relacion de la altura del contorno con el porcentaje de datos que abarcaría el contorno, son crencen inversamente.
+
+## Problema 4. Prueba de normalidad bivariada
+
+Se aplica una prueba de normalidad bivariada a los datos del archivo `datos-A2.csv` con un nivel de significación de 0.05.
+
+```{r}
+M = read.csv("datos-A2.csv")
+p = 2   # indica que se trata de dos variables
+
+nrow(M)
+head(M)
+```
+
+### Distancias de Mahalanobis
+
+```{r}
+# Vector de medias
+X = colMeans(M)
+# Matriz de covarianza
+S = cov(M)
+
+X
+S
+```
+
+$$d_i^2 = (\mathbf{x}_i - \bar{\mathbf{x}})' \mathbf{S}^{-1} (\mathbf{x}_i - \bar{\mathbf{x}})$$
+
+```{r}
+# Distancia de Mahalanobis
+d2M = mahalanobis(M, X, S)
+round(sort(d2M), 4)
+```
+
+### A. Test gráfico Q-Q Plot
+
+```{r}
+plot(qchisq(((1:nrow(M)) - 1/2)/nrow(M), df = p), sort(d2M),
+     xlab = "Cuantiles teóricos chi-cuadrada", ylab = "Distancias de Mahalanobis",
+     main = "Q-Q Plot de multinormalidad")
+abline(a = 0, b = 1, col = "red")
+```
+
+```{r}
+q = qchisq(((1:nrow(M)) - 1/2)/nrow(M), df = p)
+cor(q, sort(d2M))
+```
+
+> Interpreta el gráfico de Q-Q Plot. Indica: ¿qué semejanzas hay entre este gráfico y el caso univariado?, ¿qué diferencias?
+>
+> Al tener mas dimensiones, ya no graficamos los cuantiles muestrales contra los teoricos. En este caso necesitamos las distancias entre los puntos para de cierta manera poder capturar la nuve de datos en un volumen.
+
+### B. Test de multinormalidad: método de sesgo y curtosis de Mardia
+
+$H_0$: los datos se distribuyen normalmente.
+
+$H_1$: los datos no se distribuyen normalmente.
+
+```{r}
+library(MVN)
+res = mvn(M, mvn_test = "mardia", univariate_test = "SW")
+```
+
+```{r}
+res$multivariate_normality
+```
+
+> Interpreta los valores p de los resultados correspondientes a Mardia Skewness y Mardia Kurtosis. Observa las significancias univariadas y multivariadas.
+
+Las dos pruebas de Mardia devuelven el resultado que indica que la $H_0$ no se rechaza asi que la distribucion es normal, ya que ambos p-values son mayores a 0.05.
+
+Una de estas pruebas mide el sesgo y la otra mide la curtosis. En ambas de las pruebas estadísticas que resultaron parecen ser preocupantes pero aún así el p-value nos indica que no hay suficiente evidencia para decir que la distribución que siguen los datos no es normal. Y al ser tan pequeño nuestro dataset, podemos inferir que eso aporta bastante.
+
+### C. Conclusión
+
+> Concluye sobre la normalidad multivariada de la matriz $X$ y la normalidad univariada de cada una de las variables que componen la matriz $X$.
+
+Para la normal multivariada las dos pruebas que usamos se relacionan entre sí. El Q-Q plot nos ayuda a ver los puntos para ver si están cerca de la recta trazada, dónde en sus ejes están los cuantiles teóricos de la chi cuadrada y las medidas de Mahalanobis. Y como complemento se usa la pruebas de la curtosis y de sesgos. Con ambas pruebas no se rechazó la hipótesis nula, que es la normalidad multivariada de X, Pero hay que tomar en cuenta las limitaciones del ejercicio, como es la escaces de información.
+
+### Declaratoria de uso de IA durante el desarrollo del trabajo
+
+**Opción B. Se utilizó IA.**
+
+1.  **Herramienta:** Claude Code con modelo Claude Opus 5, utilizada desde la terminal.
+
+2.  **Uso realizado:** Plot Code esta vez me ayudó a darle estructura a todo el documento. También me ayudó a redactar código que intentaba complementar yo con lo que vimos en la presentación pero que de alguna u otra forma tronaba. Y también me ayudó a insertar fórmulas en el formato de látex para verlos como ecuaciones matemáticas.
+
+3.  **Secciones donde se utilizó:** Esta vez Claude Code se utilizó a lo largo de todo el documento ya que no hubo una sección puntual en la que se necesitó ayuda. Simplemente fue asistencia para agilizar el trabajo.
+
+4.  **Validación realizada:** De nuevo yo ejecuté por mi parte todas las celdas y Y verifiqué los resultados de UNAS con las respuestas que venían dentro de la tarea en CANVAS. También, más que nada por curiosidad, usé GeoGebra para poder graficar la distribución y poderla explorar más a fondo.
+
+5.  **Confirmación:** En este apartado confirmo que se revisó, se verificó y que asumo la responsabilidad del contenido final entregado.
+
+6.  **Otro:** todas las interpretaciones de gráficas, las conclusiones y las descripciones de los problemas siguen siendo 100% redactadas por mí y con mi criterio propio, tomando en cuenta todos los resultados de las celdas de código.
